@@ -1,3 +1,5 @@
+import API_BASE_URL from './config.js';
+
 const DEFAULT_USERS = [
   {
     username: 'Alex',
@@ -76,7 +78,7 @@ function clearSession() {
 }
 
 export async function signIn(username, password) {
-  const res = await fetch('http://localhost:3002/api/login', {
+  const res = await fetch(`${API_BASE_URL}/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
@@ -90,7 +92,7 @@ export async function signIn(username, password) {
 
 export async function signUp(username, password) {
   // Register user in backend
-  const res = await fetch('http://localhost:3002/api/register', {
+  const res = await fetch(`${API_BASE_URL}/api/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })

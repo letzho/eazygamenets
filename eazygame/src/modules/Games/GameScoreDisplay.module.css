@@ -46,7 +46,7 @@
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.8rem;
   margin-bottom: 1.2rem;
 }
@@ -180,4 +180,162 @@
   .statLabel {
     font-size: 0.65rem;
   }
+}
+
+/* Voucher System Styles */
+.voucherSection {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.2);
+}
+
+.voucherInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.voucherIcon {
+  font-size: 1.2rem;
+}
+
+.voucherText {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #856404;
+}
+
+.exchangeBtn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  width: 100%;
+}
+
+.exchangeBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #20c997, #17a2b8);
+}
+
+/* Voucher Modal Styles */
+.voucherModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.voucherModalContent {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.voucherModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.voucherModalIcon {
+  font-size: 2rem;
+}
+
+.voucherModalHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.voucherModalBody {
+  margin-bottom: 1.5rem;
+}
+
+.voucherModalBody p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.voucherValue {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #28a745 !important;
+  margin: 1rem 0 !important;
+}
+
+.voucherNote {
+  font-size: 0.85rem !important;
+  color: #856404 !important;
+  background: #fff3cd;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ffeaa7;
+}
+
+.voucherModalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.voucherCancelBtn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.voucherCancelBtn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.voucherConfirmBtn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.voucherConfirmBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #20c997, #17a2b8);
 } 

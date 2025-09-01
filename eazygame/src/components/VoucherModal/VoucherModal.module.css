@@ -1,0 +1,274 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 0;
+  width: 95%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+  border-bottom: 1px solid #e8f0ff;
+  background: linear-gradient(135deg, #7B5CFF, #A78BFA);
+  color: #fff;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.content {
+  padding: 1.2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.currentVouchers {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.voucherCount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.voucherIcon {
+  font-size: 3rem;
+}
+
+.voucherNumber {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #856404;
+}
+
+.voucherLabel {
+  font-size: 1rem;
+  color: #856404;
+  font-weight: 600;
+}
+
+.voucherValue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.valueLabel {
+  font-weight: 600;
+  color: #856404;
+}
+
+.valueAmount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.voucherInfo {
+  text-align: left;
+}
+
+.voucherInfo p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #856404;
+}
+
+.historySection {
+  margin-bottom: 1.5rem;
+}
+
+.historySection h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.historyList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.historyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.historyType {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.historyDate {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.historyAmount {
+  font-weight: 600;
+  color: #333;
+}
+
+.paymentInfo {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+.earnSection {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.2rem;
+}
+
+.earnSection h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.earnSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.stepNumber {
+  background: #7B5CFF;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.stepText {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.actions {
+  padding: 1rem 1.2rem;
+  border-top: 1px solid #e8f0ff;
+  display: flex;
+  justify-content: center;
+}
+
+.closeButton {
+  background: #7B5CFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeButton:hover {
+  background: #6a4cff;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .modal {
+    width: 98%;
+    max-width: 350px;
+    max-height: 90vh;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
+  .currentVouchers {
+    padding: 1rem;
+  }
+  
+  .voucherNumber {
+    font-size: 2rem;
+  }
+}

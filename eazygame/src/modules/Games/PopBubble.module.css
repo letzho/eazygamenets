@@ -183,20 +183,27 @@
 }
 
 .restartBtn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  background: linear-gradient(135deg, #4ECDC4, #45B7D1);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  border-radius: 12px;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+  margin-top: 0.5rem;
 }
 
 .restartBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 61, 166, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(78, 205, 196, 0.4);
+  background: linear-gradient(135deg, #45B7D1, #4ECDC4);
+}
+
+.restartBtn:active {
+  transform: translateY(0);
 }
 
 /* Background bubble decorations */

@@ -81,7 +81,7 @@ export default function PopBubble({ onComplete, onRestart, timeLeft, isPlaying }
       // Check if player won (pop 10 bubbles to win)
       if (score + 1 >= 10) {
         setTimeout(() => {
-          onComplete();
+          onComplete({ won: true, score: score + 1 });
         }, 300);
       }
     }, 200);
@@ -99,7 +99,9 @@ export default function PopBubble({ onComplete, onRestart, timeLeft, isPlaying }
     }
     
     if (score >= 10) {
-      onComplete();
+      onComplete({ won: true, score: score });
+    } else {
+      onComplete({ won: false, score: score });
     }
   };
 
@@ -155,7 +157,7 @@ export default function PopBubble({ onComplete, onRestart, timeLeft, isPlaying }
           <h3>Game Over!</h3>
           <p>Final Score: {score}</p>
           {score >= 10 ? (
-            <p className={styles.win}>🎉 You won! +1 Credit</p>
+            <p className={styles.win}>🎉 You won! +1 Coin</p>
           ) : (
             <div className={styles.lose}>
               <p>Try again!</p>

@@ -17,12 +17,13 @@ const GAMES = [
   { id: 'google-snake', name: 'Google Snake', icon: snakeSvg, component: GoogleSnake },
 ];
 
-export default function GameContainer({ onGameComplete, userCredits = 0, onGameScoreUpdate, initialGame = null }) {
+export default function GameContainer({ onGameComplete, userCoins = 0, onGameScoreUpdate, initialGame = null, onVoucherExchange }) {
   const [selectedGame, setSelectedGame] = useState(initialGame);
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameTimer, setGameTimer] = useState(null);
   const [showGameStats, setShowGameStats] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);
   const [gameScores, setGameScores] = useState({
     'candy-crush': { gamesPlayed: 0, wins: 0, bestScore: 0 },
     'pop-bubble': { gamesPlayed: 0, wins: 0, bestScore: 0 },
@@ -38,9 +39,22 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
   }, [initialGame]);
 
   const startGame = (gameId) => {
+    // Prevent multiple timers from running
+    if (timerActive) {
+      console.log('Timer already active, preventing duplicate start');
+      return;
+    }
+    
+    // Clear any existing timer first to prevent multiple timers
+    if (gameTimer) {
+      clearInterval(gameTimer);
+      setGameTimer(null);
+    }
+    
     setSelectedGame(gameId);
     setIsPlaying(true);
     setTimeLeft(10);
+    setTimerActive(true);
     
     // Update games played count
     setGameScores(prev => ({
@@ -51,29 +65,35 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
       }
     }));
     
+    // Use a more reliable timer implementation
+    let currentTime = 10;
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          endGame();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+      currentTime -= 1;
+      console.log('Timer tick, currentTime:', currentTime); // Debug log
+      
+      setTimeLeft(currentTime);
+      
+      if (currentTime <= 0) {
+        clearInterval(timer);
+        setTimerActive(false);
+        endGame();
+      }
+    }, 1000); // 1-second countdown
     
     setGameTimer(timer);
   };
 
   const endGame = () => {
+    console.log('Ending game, timerActive:', timerActive);
     setIsPlaying(false);
+    setTimerActive(false);
     if (gameTimer) {
       clearInterval(gameTimer);
       setGameTimer(null);
     }
   };
 
-  const handleGameComplete = () => {
+  const handleGameComplete = (gameResult = {}) => {
     endGame();
     
     // Update wins count
@@ -87,7 +107,8 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
       }));
     }
     
-    onGameComplete(); // This will increase credits
+    // Pass game type and result to parent
+    onGameComplete(selectedGame, gameResult);
   };
 
   const closeGame = () => {
@@ -96,17 +117,23 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
   };
 
   const restartGame = () => {
-    // Reset game state and restart
-    setTimeLeft(10);
-    setIsPlaying(false);
+    console.log('Restarting game...'); // Debug log
+    
+    // Clear any existing timer first
     if (gameTimer) {
       clearInterval(gameTimer);
       setGameTimer(null);
     }
-    // Small delay to ensure state is reset before starting
-    setTimeout(() => {
+    
+    // Reset game state immediately
+    setTimeLeft(10);
+    setIsPlaying(false);
+    setTimerActive(false);
+    
+    // Start the game immediately without delay
+    if (selectedGame) {
       startGame(selectedGame);
-    }, 100);
+    }
   };
 
   const selectedGameData = GAMES.find(game => game.id === selectedGame);
@@ -118,6 +145,21 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
       onGameScoreUpdate(gameScores);
     }
   }, [gameScores, onGameScoreUpdate]);
+
+  // Ensure timer is properly managed when game state changes
+  useEffect(() => {
+    if (!isPlaying && gameTimer) {
+      console.log('Game stopped, clearing timer');
+      clearInterval(gameTimer);
+      setGameTimer(null);
+      setTimerActive(false);
+    }
+  }, [isPlaying, gameTimer]);
+
+  // Debug: Monitor timeLeft changes
+  useEffect(() => {
+    console.log('TimeLeft changed to:', timeLeft);
+  }, [timeLeft]);
 
     return (
     <>
@@ -158,10 +200,13 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
               </span>
               <span className={styles.gameName}>{selectedGameData.name}</span>
             </div>
-              <div className={styles.gameControls}>
-                <div className={styles.timer}>⏱️ {timeLeft}s</div>
-                <button className={styles.closeBtn} onClick={closeGame}>✕</button>
+                          <div className={styles.gameControls}>
+              <div className={`${styles.timer} ${timeLeft <= 3 ? styles.timerWarning : ''}`}>
+                ⏱️ {timeLeft}s
               </div>
+              <button className={styles.restartBtn} onClick={restartGame}>🔄</button>
+              <button className={styles.closeBtn} onClick={closeGame}>✕</button>
+            </div>
             </div>
             <div className={styles.gameArea}>
               <GameComponent 
@@ -190,7 +235,11 @@ export default function GameContainer({ onGameComplete, userCredits = 0, onGameS
               </button>
             </div>
             <div className={styles.statsContent}>
-              <GameScoreDisplay gameScores={gameScores} totalCredits={userCredits} />
+              <GameScoreDisplay 
+                gameScores={gameScores} 
+                totalCoins={userCoins} 
+                onVoucherExchange={onVoucherExchange}
+              />
             </div>
           </div>
         </>

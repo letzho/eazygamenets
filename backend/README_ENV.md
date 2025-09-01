@@ -16,6 +16,11 @@ DB_PORT=5432
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_email_password
 
+# Twilio Configuration (for WhatsApp split bill feature)
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
+
 # OpenAI API Key (for AI chatbot)
 OPENAI_API_KEY=your_openai_api_key_here
 
@@ -34,6 +39,18 @@ PORT=3001
 4. Create a new API key
 5. Copy the key and paste it in the .env file
 
+## Getting Twilio Credentials (for WhatsApp)
+
+1. Go to https://www.twilio.com/
+2. Sign up or log in to your account
+3. Navigate to Console Dashboard
+4. Find your Account SID and Auth Token
+5. For WhatsApp, you'll need to:
+   - Join the Twilio WhatsApp Sandbox by sending the provided code to +14155238886
+   - Or get a dedicated WhatsApp Business number
+6. Set TWILIO_WHATSAPP_FROM to your WhatsApp sender (e.g., whatsapp:+14155238886 for sandbox)
+7. Add these credentials to your .env file
+
 ## Features that require API keys:
 
 ### OpenAI API (AI Chatbot)
@@ -49,6 +66,12 @@ PORT=3001
 ### Email Configuration (Split Bill)
 - Used for sending split bill requests via email
 - Requires Gmail account with app password
+
+### Twilio Configuration (WhatsApp Split Bill)
+- Used for sending split bill requests via WhatsApp
+- Requires Twilio account with WhatsApp capabilities
+- Supports both sandbox and production WhatsApp numbers
+- Environment variables: TWILIO_ID, TWILIO_TOKEN, TWILIO_WHATSAPP_FROM
 
 ## Security Notes
 

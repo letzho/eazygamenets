@@ -14,8 +14,11 @@ export default function PrepaidCardModal({
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.container} onClick={e => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Prepaid Cards</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <div className={styles.headerContent}>
+            <div className={styles.headerIcon}>💳</div>
+            <h2 className={styles.title}>Prepaid Cards</h2>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         <div className={styles.content}>
@@ -25,7 +28,8 @@ export default function PrepaidCardModal({
               <h3>No Cards Found</h3>
               <p>You don't have any prepaid cards yet.</p>
               <button className={styles.addCardBtn} onClick={onAddCard}>
-                + Add Your First Card
+                <span className={styles.btnIcon}>+</span>
+                Add Your First Card
               </button>
             </div>
           ) : (
@@ -40,11 +44,14 @@ export default function PrepaidCardModal({
                   return (
                     <div key={card.id} className={styles.cardItem}>
                       <div className={styles.cardInfo}>
-                        <div className={styles.cardNumber}>{masked}</div>
+                        <div className={styles.cardHeader}>
+                          <div className={styles.cardNumber}>{masked}</div>
+                          <div className={styles.cardType}>NETS Prepaid</div>
+                        </div>
                         <div className={styles.cardDetails}>
                           <span className={styles.cardExpiry}>Expires: {card.expiry}</span>
                           <span className={styles.cardBalance}>
-                            Balance: ${Number(card.balance ?? 0).toFixed(2)}
+                            Balance: <span className={styles.balanceAmount}>${Number(card.balance ?? 0).toFixed(2)}</span>
                           </span>
                         </div>
                       </div>
@@ -53,6 +60,7 @@ export default function PrepaidCardModal({
                           className={styles.topUpBtn}
                           onClick={() => onTopUp(card.id)}
                         >
+                          <span className={styles.btnIcon}>💰</span>
                           Top Up
                         </button>
                       </div>
@@ -63,11 +71,18 @@ export default function PrepaidCardModal({
               
               <div className={styles.addCardSection}>
                 <button className={styles.addCardBtn} onClick={onAddCard}>
-                  + Add New Card
+                  <span className={styles.btnIcon}>+</span>
+                  Add New Card
                 </button>
               </div>
             </>
           )}
+        </div>
+        
+        <div className={styles.footer}>
+          <button className={styles.cancelBtn} onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     </div>

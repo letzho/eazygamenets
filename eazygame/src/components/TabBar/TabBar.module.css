@@ -18,20 +18,26 @@
     align-items: center;
     font-size: 1rem;
     color: #888;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.5rem;
     flex: 1;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
     cursor: pointer;
+    border-radius: 50%;
+    position: relative;
   }
   
-  /* Active tab colors - Home (1st) in red, others in blue */
+  /* Active tab colors - All tabs use clear blue */
   .tabBar button.active, .tabBar button:focus {
     color: #003da6;
+    background: rgba(0, 61, 166, 0.04);
+    box-shadow: 0 1px 2px rgba(0, 61, 166, 0.1);
   }
   
   .tabBar button:nth-child(1).active, .tabBar button:nth-child(1):focus {
-  color: #e14a4a;
-}
+    color: #003da6;
+    background: rgba(0, 61, 166, 0.04);
+    box-shadow: 0 1px 2px rgba(0, 61, 166, 0.1);
+  }
 
 /* Make the 3rd button (Scan QR) floating and larger as QR scanner */
 .tabBar button:nth-child(3) {
@@ -56,6 +62,9 @@
 
 .tabBar button:nth-child(3).active, .tabBar button:nth-child(3):focus {
   color: white;
+  background: #003da6;
+  box-shadow: 0 6px 16px rgba(0, 61, 166, 0.4);
+  transform: scale(1.05);
 }
   
   .icon {

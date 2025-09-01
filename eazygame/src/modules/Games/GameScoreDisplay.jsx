@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './GameScoreDisplay.module.css';
 
-export default function GameScoreDisplay({ gameScores, totalCredits }) {
+export default function GameScoreDisplay({ gameScores, totalCoins, onVoucherExchange }) {
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
   const games = [
     { id: 'candy-crush', name: 'Candy Crush', icon: '🍬' },
     { id: 'pop-bubble', name: 'Pop Bubble', icon: '🫧' },
@@ -12,6 +13,24 @@ export default function GameScoreDisplay({ gameScores, totalCredits }) {
   const totalGamesPlayed = Object.values(gameScores).reduce((sum, score) => sum + score.gamesPlayed, 0);
   const totalWins = Object.values(gameScores).reduce((sum, score) => sum + score.wins, 0);
   const winRate = totalGamesPlayed > 0 ? Math.round((totalWins / totalGamesPlayed) * 100) : 0;
+  
+  // Voucher system: 10 coins = $0.10 voucher
+  const canExchangeVoucher = totalCoins >= 10;
+  const vouchersEarned = Math.floor(totalCoins / 10);
+  const remainingCoins = totalCoins % 10;
+
+  const handleVoucherExchange = () => {
+    if (canExchangeVoucher) {
+      setShowVoucherModal(true);
+    }
+  };
+
+  const confirmVoucherExchange = () => {
+    if (onVoucherExchange) {
+      onVoucherExchange(vouchersEarned);
+    }
+    setShowVoucherModal(false);
+  };
 
   return (
     <div className={styles.scoreContainer}>
@@ -21,8 +40,8 @@ export default function GameScoreDisplay({ gameScores, totalCredits }) {
           <span>Game Stats</span>
         </div>
         <div className={styles.totalCredits}>
-          <span className={styles.creditsIcon}>⭐</span>
-          <span>{totalCredits} Credits</span>
+          <span className={styles.creditsIcon}>🪙</span>
+          <span>{totalCoins} Coins</span>
         </div>
       </div>
       
@@ -39,7 +58,29 @@ export default function GameScoreDisplay({ gameScores, totalCredits }) {
           <div className={styles.statNumber}>{winRate}%</div>
           <div className={styles.statLabel}>Win Rate</div>
         </div>
+        <div className={styles.statCard}>
+          <div className={styles.statNumber}>{vouchersEarned}</div>
+          <div className={styles.statLabel}>Vouchers</div>
+        </div>
       </div>
+
+      {/* Voucher Exchange Section */}
+      {canExchangeVoucher && (
+        <div className={styles.voucherSection}>
+          <div className={styles.voucherInfo}>
+            <span className={styles.voucherIcon}>🎫</span>
+            <span className={styles.voucherText}>
+              You can exchange {vouchersEarned} voucher{vouchersEarned > 1 ? 's' : ''} worth ${(vouchersEarned * 0.10).toFixed(2)} (10 coins each)
+            </span>
+          </div>
+          <button 
+            className={styles.exchangeBtn}
+            onClick={handleVoucherExchange}
+          >
+            💰 Exchange for Vouchers
+          </button>
+        </div>
+      )}
 
       <div className={styles.gameBreakdown}>
         <div className={styles.breakdownTitle}>Game Breakdown</div>
@@ -73,6 +114,37 @@ export default function GameScoreDisplay({ gameScores, totalCredits }) {
           })}
         </div>
       </div>
+
+      {/* Voucher Exchange Modal */}
+      {showVoucherModal && (
+        <div className={styles.voucherModal}>
+          <div className={styles.voucherModalContent}>
+            <div className={styles.voucherModalHeader}>
+              <span className={styles.voucherModalIcon}>🎫</span>
+                             <h3>Exchange Coins for Vouchers</h3>
+            </div>
+            <div className={styles.voucherModalBody}>
+                             <p>Exchange {vouchersEarned * 10} coins for {vouchersEarned} voucher{vouchersEarned > 1 ? 's' : ''}?</p>
+              <p className={styles.voucherValue}>Total Value: ${(vouchersEarned * 0.10).toFixed(2)}</p>
+              <p className={styles.voucherNote}>Vouchers can be used during merchant checkout!</p>
+            </div>
+            <div className={styles.voucherModalActions}>
+              <button 
+                className={styles.voucherCancelBtn}
+                onClick={() => setShowVoucherModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles.voucherConfirmBtn}
+                onClick={confirmVoucherExchange}
+              >
+                Confirm Exchange
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

@@ -6,7 +6,9 @@ import Modal from '../../components/Modal/Modal';
 import UserIcon from '../../components/UserIcon/UserIcon';
 import BalanceDetailsModal from '../../components/BalanceDetailsModal/BalanceDetailsModal';
 import TransactionsModal from '../../components/TransactionsModal/TransactionsModal';
+import PaymentGateway from '../../components/PaymentGateway/PaymentGateway';
 import SendMoneyModal from '../../components/SendMoneyModal/SendMoneyModal';
+import VoucherModal from '../../components/VoucherModal/VoucherModal';
 import netsLogo from '../../assets/nets-40.png';
 
 // Import product images
@@ -61,7 +63,7 @@ const products = [
   { id: 10, name: 'Pet Toy Set', price: 12, category: 'Pets', image: pettoy },
 ];
 
-export default function Merchants({ isSignedIn, user, onProfileClick, cards, setCards }) {
+export default function Merchants({ isSignedIn, user, onProfileClick, cards, setCards, userVouchers = 0, onVoucherUse = null }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [modalProduct, setModalProduct] = useState(null);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
@@ -72,6 +74,10 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
   const [showSendMoneyModal, setShowSendMoneyModal] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [showPaymentGateway, setShowPaymentGateway] = useState(false);
+  const [paymentItems, setPaymentItems] = useState([]);
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
+  const [voucherHistory, setVoucherHistory] = useState([]);
 
   // Calculate total balance from cards
   const totalBalance = cards && Array.isArray(cards)
@@ -96,6 +102,20 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
     fetchTransactions(userId);
   };
 
+  const handlePaymentSuccess = (paymentData) => {
+    console.log('Payment successful:', paymentData);
+    alert('Payment successful! Your order has been processed.');
+    setShowPaymentGateway(false);
+    setModalProduct(null);
+    setPaymentItems([]);
+  };
+
+  const handlePaymentFailure = (paymentData) => {
+    console.log('Payment failed:', paymentData);
+    alert('Payment failed. Please try again.');
+    setShowPaymentGateway(false);
+  };
+
   // Fetch transactions on component mount
   useEffect(() => {
     if (user?.id) {
@@ -110,12 +130,16 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
       if (exists) return prev;
       return [product, ...prev].slice(0, 6);
     });
-    // Initialize all allocations to '' (empty string)
-    if (cards && product) {
-      setPayAlloc(cards.map(card => ({ cardId: card.id, amount: '' })));
-      setShowPayModal(true);
-      setPayError('');
-    }
+    
+    // Set up payment items for NETS payment gateway
+    setPaymentItems([{
+      name: product.name,
+      price: product.price,
+      image: product.image
+    }]);
+    
+    // Show payment gateway instead of card allocation
+    setShowPaymentGateway(true);
   };
 
   const handlePayAllocChange = (cardId, value) => {
@@ -247,6 +271,19 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
         <div className={styles.headerTop}>
           <div className={styles.balanceDisplay}>
             <span className={styles.balanceAmount}>SGD ${totalBalance.toFixed(2)}</span>
+            <div 
+              className={`${styles.voucherDisplay} ${userVouchers > 0 ? styles.clickable : ''}`}
+              onClick={() => setShowVoucherModal(true)}
+              style={{ cursor: userVouchers > 0 ? 'pointer' : 'default' }}
+            >
+              <span className={styles.voucherIcon}>🎫</span>
+              <span className={styles.voucherText}>
+                {userVouchers > 0 
+                  ? `${userVouchers} voucher${userVouchers > 1 ? 's' : ''} ($${(userVouchers * 0.10).toFixed(2)})`
+                  : 'No vouchers - Click to view'
+                }
+              </span>
+            </div>
           </div>
           <div className={styles.profileSection}>
             <UserIcon isSignedIn={isSignedIn} onProfileClick={onProfileClick} />
@@ -393,7 +430,7 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
             }
           })()}
           <button
-              style={{ background: '#003da6', color: '#fff', border: 'none', borderRadius: 8, padding: '0.8rem 1.5rem', fontWeight: 700, fontSize: '1.1rem', cursor: 'pointer', width: '100%', maxWidth: 360, margin: '8px auto 0 auto', boxSizing: 'border-box', display: 'block' }}
+            style={{ background: '#003da6', color: '#fff', border: 'none', borderRadius: 8, padding: '0.8rem 1.5rem', fontWeight: 700, fontSize: '1.1rem', cursor: 'pointer', width: '100%', maxWidth: 360, margin: '8px auto 0 auto', boxSizing: 'border-box', display: 'block' }}
             onClick={handleConfirmPay}
               disabled={payAlloc.reduce((sum, a) => sum + Number(a.amount || 0), 0) !== modalProduct.price || payAlloc.some(a => Number(a.amount || 0) < 0 || Number(a.amount || 0) > (cards.find(c => c.id === a.cardId)?.balance || 0))}
             >
@@ -424,6 +461,27 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
         onClose={() => setShowSendMoneyModal(false)}
         cards={cards}
         onSend={handleSendMoney}
+      />
+
+      {/* NETS Payment Gateway */}
+      <PaymentGateway
+        open={showPaymentGateway}
+        onClose={() => setShowPaymentGateway(false)}
+        amount={modalProduct?.price || 0}
+        items={paymentItems}
+        onPaymentSuccess={handlePaymentSuccess}
+        onPaymentFailure={handlePaymentFailure}
+        userVouchers={userVouchers}
+        onVoucherUse={onVoucherUse}
+        cards={cards}
+      />
+
+      {/* Voucher Modal */}
+      <VoucherModal
+        open={showVoucherModal}
+        onClose={() => setShowVoucherModal(false)}
+        userVouchers={userVouchers}
+        voucherHistory={voucherHistory}
       />
     </div>
   );

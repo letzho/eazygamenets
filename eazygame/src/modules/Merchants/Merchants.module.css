@@ -52,13 +52,46 @@
 
 .balanceDisplay {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
 }
 
 .balanceAmount {
   font-size: 1.8rem;
   font-weight: 700;
   color: white;
+}
+
+.voucherDisplay {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.voucherDisplay.clickable:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.voucherIcon {
+  font-size: 1rem;
+}
+
+.voucherText {
+  font-size: 0.8rem;
+  color: white;
+  font-weight: 600;
 }
 
 .welcomeText {

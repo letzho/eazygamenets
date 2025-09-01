@@ -131,7 +131,9 @@ export default function CandyCrush({ onComplete, onRestart, timeLeft, isPlaying 
 
   const endGame = () => {
     if (score >= 20) {
-      onComplete();
+      onComplete({ won: true, score: score });
+    } else {
+      onComplete({ won: false, score: score });
     }
   };
 
@@ -180,7 +182,7 @@ export default function CandyCrush({ onComplete, onRestart, timeLeft, isPlaying 
           <h3>Game Over!</h3>
           <p>Final Score: {score}</p>
           {score >= 20 ? (
-            <p className={styles.win}>🎉 You won! +1 Credit</p>
+            <p className={styles.win}>🎉 You won! +1 Coin</p>
           ) : (
             <div className={styles.lose}>
               <p>Try again!</p>

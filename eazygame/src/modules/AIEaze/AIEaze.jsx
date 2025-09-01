@@ -4,15 +4,18 @@ import netsLogo from '../../assets/nets-40.png';
 import UserIcon from '../../components/UserIcon/UserIcon';
 import BalanceDetailsModal from '../../components/BalanceDetailsModal/BalanceDetailsModal';
 import TransactionsModal from '../../components/TransactionsModal/TransactionsModal';
+import VoucherModal from '../../components/VoucherModal/VoucherModal';
 
 
-export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCards, onTabChange, onSignOut, onShowAuthModal }) {
+export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCards, onTabChange, onSignOut, onShowAuthModal, userVouchers = 0, onVoucherUse = null }) {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showBalanceDetailsModal, setShowBalanceDetailsModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
   const [transactions, setTransactions] = useState([]);
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
+  const [voucherHistory, setVoucherHistory] = useState([]);
   const messagesEndRef = useRef(null);
 
   // Calculate total balance from cards
@@ -157,6 +160,19 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
         <div className={styles.headerTop}>
           <div className={styles.balanceDisplay}>
             <span className={styles.balanceAmount}>SGD {totalBalance.toFixed(2)}</span>
+            <div 
+              className={`${styles.voucherDisplay} ${userVouchers > 0 ? styles.clickable : ''}`}
+              onClick={() => setShowVoucherModal(true)}
+              style={{ cursor: userVouchers > 0 ? 'pointer' : 'default' }}
+            >
+              <span className={styles.voucherIcon}>🎫</span>
+              <span className={styles.voucherText}>
+                {userVouchers > 0 
+                  ? `${userVouchers} voucher${userVouchers > 1 ? 's' : ''} ($${(userVouchers * 0.10).toFixed(2)})`
+                  : 'No vouchers - Click to view'
+                }
+              </span>
+            </div>
           </div>
           <div className={styles.profileSection}>
             <UserIcon 
@@ -263,6 +279,13 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
         cards={cards} 
       />
 
+      {/* Voucher Modal */}
+      <VoucherModal
+        open={showVoucherModal}
+        onClose={() => setShowVoucherModal(false)}
+        userVouchers={userVouchers}
+        voucherHistory={voucherHistory}
+      />
 
     </div>
   );

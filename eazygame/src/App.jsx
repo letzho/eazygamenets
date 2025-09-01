@@ -8,6 +8,7 @@ import NearMe from './modules/NearMe/NearMe';
 import AIEaze from './modules/AIEaze/AIEaze';
 import Modal from './components/Modal/Modal';
 import { signIn, signUp, signOut, getCurrentUser, updateCurrentUserData, deleteCurrentUser } from './userStore';
+import API_BASE_URL from './config.js';
 import './App.css';
 
 const TABS = [
@@ -28,6 +29,8 @@ export default function App() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   // Shared card state
   const [cards, setCards] = useState([]);
+  // Shared voucher state
+  const [userVouchers, setUserVouchers] = useState(0);
 
   console.log('App component rendering, current tab:', tab);
 
@@ -38,7 +41,7 @@ export default function App() {
   useEffect(() => {
     const userId = getCurrentUser();
     if (isSignedIn && userId) {
-              fetch(`http://localhost:3002/api/cards?user_id=${userId}`)
+              fetch(`${API_BASE_URL}/api/cards?user_id=${userId}`)
         .then(res => res.json())
         .then(data => setCards(data));
     } else {
@@ -49,9 +52,22 @@ export default function App() {
   useEffect(() => {
     const userId = getCurrentUser();
     if (isSignedIn && userId) {
-              fetch(`http://localhost:3002/api/users/${userId}`)
+      fetch(`${API_BASE_URL}/api/users/${userId}`)
         .then(res => res.json())
         .then(data => setUser(data));
+      
+      // Load user vouchers from database
+      fetch(`${API_BASE_URL}/api/vouchers/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setUserVouchers(data.vouchers.quantity);
+            console.log('User vouchers loaded in App:', data.vouchers.quantity);
+          }
+        })
+        .catch(error => {
+          console.error('Error loading user vouchers:', error);
+        });
     }
   }, [isSignedIn]);
 
@@ -105,6 +121,10 @@ export default function App() {
   // Pass updateUser to children for data changes
   const updateUser = (newUser) => setUser(newUser);
 
+  const handleVoucherUse = (vouchersUsed) => {
+    setUserVouchers(prev => prev - vouchersUsed);
+  };
+
   const handleTabChange = (newTab) => {
     console.log('Tab changing from', tab, 'to', newTab);
     setTab(newTab);
@@ -113,12 +133,12 @@ export default function App() {
     <div className="app-bg">
       <div className="app-container">
         <div className="app-content">
-          {tab === 'home' && <Home isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} onTabChange={handleTabChange} />}
+          {tab === 'home' && <Home isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} onTabChange={handleTabChange} userVouchers={userVouchers} setUserVouchers={setUserVouchers} onVoucherUse={handleVoucherUse} />}
           {tab === 'scanqr' && <ScanQR isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} />}
-          {tab === 'merchants' && <Merchants isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} />}
+          {tab === 'merchants' && <Merchants isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} userVouchers={userVouchers} onVoucherUse={handleVoucherUse} />}
           {tab === 'cards' && <Cards isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} />}
-          {tab === 'nearme' && <NearMe isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} />}
-          {tab === 'aieaze' && <AIEaze isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} />}
+          {tab === 'nearme' && <NearMe isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} userVouchers={userVouchers} onVoucherUse={handleVoucherUse} />}
+          {tab === 'aieaze' && <AIEaze isSignedIn={isSignedIn} user={user} cards={cards} setCards={setCards} onProfileClick={() => setShowProfileModal(true)} userVouchers={userVouchers} onVoucherUse={handleVoucherUse} />}
         </div>
         <TabBar tabs={TABS} activeTab={tab} onTabChange={handleTabChange} />
       </div>

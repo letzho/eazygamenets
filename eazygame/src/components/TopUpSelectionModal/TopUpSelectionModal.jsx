@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './TopUpSelectionModal.module.css';
 
 export default function TopUpSelectionModal({ 
@@ -7,14 +7,34 @@ export default function TopUpSelectionModal({
   cards, 
   onTopUp 
 }) {
+  const [topUpAmounts, setTopUpAmounts] = useState({});
+
+  const handleTopUp = (cardId) => {
+    const amount = parseFloat(topUpAmounts[cardId] || 10);
+    if (amount > 0) {
+      onTopUp(cardId, amount);
+      onClose();
+    }
+  };
+
+  const handleAmountChange = (cardId, value) => {
+    setTopUpAmounts(prev => ({
+      ...prev,
+      [cardId]: value
+    }));
+  };
+
   if (!open) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.container} onClick={e => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Select Card to Top Up</h2>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <div className={styles.headerContent}>
+            <div className={styles.headerIcon}>💳</div>
+            <h2 className={styles.title}>Select Card to Top Up</h2>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         <div className={styles.content}>
@@ -36,22 +56,38 @@ export default function TopUpSelectionModal({
                 return (
                   <div key={card.id} className={styles.cardItem}>
                     <div className={styles.cardInfo}>
-                      <div className={styles.cardNumber}>{masked}</div>
+                      <div className={styles.cardHeader}>
+                        <div className={styles.cardNumber}>{masked}</div>
+                        <div className={styles.cardType}>NETS Prepaid</div>
+                      </div>
                       <div className={styles.cardDetails}>
                         <span className={styles.cardExpiry}>Expires: {card.expiry}</span>
                         <span className={styles.cardBalance}>
-                          Balance: ${Number(card.balance ?? 0).toFixed(2)}
+                          Balance: <span className={styles.balanceAmount}>${Number(card.balance ?? 0).toFixed(2)}</span>
                         </span>
                       </div>
                     </div>
                     <div className={styles.cardActions}>
+                      <div className={styles.amountInput}>
+                        <label htmlFor={`amount-${card.id}`}>Amount</label>
+                        <input
+                          id={`amount-${card.id}`}
+                          type="number"
+                          min="1"
+                          max="1000"
+                          step="0.01"
+                          value={topUpAmounts[card.id] || 10}
+                          onChange={(e) => handleAmountChange(card.id, e.target.value)}
+                          placeholder="10.00"
+                          className={styles.input}
+                        />
+                      </div>
                       <button 
                         className={styles.topUpBtn}
-                        onClick={() => {
-                          onTopUp(card.id);
-                          onClose();
-                        }}
+                        onClick={() => handleTopUp(card.id)}
+                        disabled={!topUpAmounts[card.id] || parseFloat(topUpAmounts[card.id]) <= 0}
                       >
+                        <span className={styles.btnIcon}>💰</span>
                         Top Up
                       </button>
                     </div>
@@ -60,6 +96,12 @@ export default function TopUpSelectionModal({
               })}
             </div>
           )}
+        </div>
+        
+        <div className={styles.footer}>
+          <button className={styles.cancelBtn} onClick={onClose}>
+            Cancel
+          </button>
         </div>
       </div>
     </div>
