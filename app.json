@@ -1,0 +1,50 @@
+{
+  "name": "eazygame-payment-app",
+  "description": "A comprehensive payment and gaming application with NETS integration",
+  "repository": "https://github.com/yourusername/POLYFINTECH_2025A",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "express", "react", "payment", "gaming", "nets"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment setting",
+      "value": "production"
+    },
+    "EMAIL_USER": {
+      "description": "Email address for sending notifications",
+      "required": true
+    },
+    "EMAIL_PASS": {
+      "description": "Email password/app password",
+      "required": true
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "description": "Twilio Account SID for WhatsApp integration",
+      "required": false
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "description": "Twilio Auth Token for WhatsApp integration", 
+      "required": false
+    },
+    "TWILIO_WHATSAPP_FROM": {
+      "description": "Twilio WhatsApp From number",
+      "required": false
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:mini",
+      "as": "DATABASE"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}
