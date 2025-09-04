@@ -1,3 +1,6 @@
+// Force cache refresh - Config v3.0
+console.log('Config v3.0 loaded at:', new Date().toISOString());
+
 // Use window.location to detect if we're on Heroku
 const isProduction = window.location.hostname === 'eazygamenets-3d29b52fe934.herokuapp.com';
 
@@ -7,7 +10,7 @@ const API_BASE_URL = isProduction
 
 console.log('API_BASE_URL:', API_BASE_URL, 'isProduction:', isProduction);
 console.log('Current hostname:', window.location.hostname);
-console.log('Config loaded at:', new Date().toISOString());
+console.log('Full URL:', window.location.href);
 
 export default API_BASE_URL;
 
