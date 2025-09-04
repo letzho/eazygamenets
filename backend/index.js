@@ -5,7 +5,7 @@ require('dotenv').config();
 const pool = require('./db');
 const nodemailer = require('nodemailer');
 const QRCode = require('qrcode');
-const { createCanvas, loadImage } = require('canvas');
+// const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs');
 const OpenAI = require('openai');
 const { 
