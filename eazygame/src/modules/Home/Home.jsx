@@ -2278,30 +2278,30 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
           <div className={styles.quickActionsTitle}>Smart Shortcut</div>
           <div className={styles.quickActionsGrid}>
             <button onClick={() => setShowSendMoney(true)} className={styles.quickActionBtn}>
-              <img src="/src/assets/transfer.png" alt="Transfer" className={styles.quickActionIcon} />
+              <img src="/transfer.png" alt="Transfer" className={styles.quickActionIcon} />
               <span>Transfer</span>
           </button>
             <button onClick={() => setShowAutoTopUpModal(true)} className={styles.quickActionBtn}>
-              <img src="/src/assets/autotopup.png" alt="Auto Top Up" className={styles.quickActionIcon} />
+              <img src="/autotopup.png" alt="Auto Top Up" className={styles.quickActionIcon} />
               <span>Auto Top Up</span>
           </button>
             <button onClick={openSmartShortcutTopUp} className={styles.quickActionBtn}>
-              <img src="/src/assets/topup.png" alt="Top-up" className={styles.quickActionIcon} />
+              <img src="/topup.png" alt="Top-up" className={styles.quickActionIcon} />
               <span>Top-up</span>
             </button>
             <button onClick={() => setShowSplitBillChoice(true)} className={styles.quickActionBtn}>
-              <img src="/src/assets/split.png" alt="Split Bill" className={styles.quickActionIcon} />
+              <img src="/split.png" alt="Split Bill" className={styles.quickActionIcon} />
               <span>Split Bill</span>
           </button>
             <button onClick={() => {
               console.log('NFC Payment button clicked - opening modal');
               setShowNFCModal(true);
             }} className={styles.quickActionBtn}>
-              <img src="/src/assets/nfc.png" alt="NFC Payment" className={styles.quickActionIcon} />
+              <img src="/nfc.png" alt="NFC Payment" className={styles.quickActionIcon} />
               <span>NFC Payment</span>
             </button>
             <button onClick={() => setShowStatsModal(true)} className={styles.quickActionBtn}>
-              <img src="/src/assets/stats.png" alt="Stats" className={styles.quickActionIcon} />
+              <img src="/stats.png" alt="Stats" className={styles.quickActionIcon} />
               <span>Stats</span>
             </button>
           </div>
