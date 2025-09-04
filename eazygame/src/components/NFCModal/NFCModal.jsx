@@ -18,13 +18,19 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
   } else if (currentUserId) {
     // Map user ID to email for demo purposes
     const userIdToEmailMap = {
-      '8': 'lsheang@yahoo.com',  // Assuming user ID 8 is lsheang
-      '9': 'evanlee@gmail.com',  // Add other user IDs as needed
-      '10': 'shilin@gmail.com'   // Add other user IDs as needed
+      '1': 'lsheang@yahoo.com',   // User ID 1
+      '2': 'evanlee@gmail.com',   // User ID 2
+      '3': 'shilin@gmail.com',    // User ID 3
+      '8': 'lsheang@yahoo.com',   // Legacy user ID 8
+      '9': 'evanlee@gmail.com',   // Legacy user ID 9
+      '10': 'shilin@gmail.com'    // Legacy user ID 10
     };
-    currentUser = { email: userIdToEmailMap[currentUserId] || `user${currentUserId}@example.com` };
+    currentUser = { 
+      email: userIdToEmailMap[currentUserId] || `user${currentUserId}@example.com`,
+      id: currentUserId 
+    };
   } else {
-    currentUser = { email: 'demo@example.com' };
+    currentUser = { email: 'demo@example.com', id: 'demo' };
   }
   
   console.log('NFCModal currentUser:', currentUser);

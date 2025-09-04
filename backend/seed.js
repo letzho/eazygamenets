@@ -2,14 +2,14 @@ const pool = require('./db');
 
 const DEFAULT_USERS = [
   {
-    username: 'Alex',
+    username: 'lsheang@yahoo.com',
     password: 'password1',
     data: {
-      name: 'Alex',
+      name: 'Leow Sheang',
       balance: 2458.3,
       cards: [
-        { id: 1, number: '**** **** **** 4289', holder: 'Alex Johnson', expiry: '09/25', primary: true },
-        { id: 2, number: '**** **** **** 7632', holder: 'Alex Johnson', expiry: '11/26', primary: false },
+        { id: 1, number: '**** **** **** 4289', holder: 'Leow Sheang', expiry: '09/25', primary: true },
+        { id: 2, number: '**** **** **** 7632', holder: 'Leow Sheang', expiry: '11/26', primary: false },
       ],
       transactions: [
         { id: 1, name: 'Received from John', time: 'Today, 10:45 AM', amount: 250, type: 'income' },
@@ -19,13 +19,13 @@ const DEFAULT_USERS = [
     },
   },
   {
-    username: 'Alex',
+    username: 'evanlee@gmail.com',
     password: 'password2',
     data: {
-      name: 'Alex',
+      name: 'Evan Lee',
       balance: 1200.0,
       cards: [
-        { id: 1, number: '**** **** **** 1234', holder: 'Alex Johnson', expiry: '10/24', primary: true },
+        { id: 1, number: '**** **** **** 1234', holder: 'Evan Lee', expiry: '10/24', primary: true },
       ],
       transactions: [
         { id: 1, name: 'Salary', time: 'Today, 9:00 AM', amount: 1200, type: 'income' },
@@ -33,13 +33,13 @@ const DEFAULT_USERS = [
     },
   },
   {
-    username: 'Alex',
+    username: 'shilin@gmail.com',
     password: 'password3',
     data: {
-      name: 'Alex',
+      name: 'Shilin',
       balance: 500.0,
       cards: [
-        { id: 1, number: '**** **** **** 5678', holder: 'Alex Johnson', expiry: '12/23', primary: true },
+        { id: 1, number: '**** **** **** 5678', holder: 'Shilin', expiry: '12/23', primary: true },
       ],
       transactions: [
         { id: 1, name: 'Bookstore', time: 'Yesterday, 2:00 PM', amount: -50, type: 'expense' },
