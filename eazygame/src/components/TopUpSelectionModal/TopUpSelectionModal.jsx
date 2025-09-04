@@ -57,7 +57,7 @@ export default function TopUpSelectionModal({
                   <div key={card.id} className={styles.cardItem}>
                     <div className={styles.cardInfo}>
                       <div className={styles.cardHeader}>
-                        <div className={styles.cardNumber}>{masked}</div>
+                        <div className={styles.cardNumber}>Card ending in {card.number.slice(-4)}</div>
                         <div className={styles.cardType}>NETS Prepaid</div>
                       </div>
                       <div className={styles.cardDetails}>

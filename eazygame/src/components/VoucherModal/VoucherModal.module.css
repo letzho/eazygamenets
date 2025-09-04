@@ -31,7 +31,7 @@
   align-items: center;
   padding: 1.2rem;
   border-bottom: 1px solid #e8f0ff;
-  background: linear-gradient(135deg, #7B5CFF, #A78BFA);
+  background: linear-gradient(135deg, #003da6, #0052cc);
   color: #fff;
 }
 
@@ -211,7 +211,7 @@
 }
 
 .stepNumber {
-  background: #7B5CFF;
+  background: #003da6;
   color: white;
   width: 24px;
   height: 24px;
@@ -237,7 +237,7 @@
 }
 
 .closeButton {
-  background: #7B5CFF;
+  background: #003da6;
   color: white;
   border: none;
   border-radius: 8px;
@@ -249,7 +249,7 @@
 }
 
 .closeButton:hover {
-  background: #6a4cff;
+  background: #002d7a;
 }
 
 /* Responsive design */

@@ -86,8 +86,8 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://eazygamenets-3d29b52fe934.herokuapp.com'
-    
+    'https://eazygamepay-52b0185fda6d.herokuapp.com',
+    'https://eazygamepay-frontend.herokuapp.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -121,10 +121,12 @@ app.get("/api/nets-credentials", (req, res) => {
 // Handle preflight requests
 app.options('*', cors());
 
-// Test route
-app.get('/', (req, res) => {
-  res.json({ message: 'Backend is running!' });
-});
+// Test route (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/', (req, res) => {
+    res.json({ message: 'Backend is running!' });
+  });
+}
 
 // Test database connection
 app.get('/api/test-db', async (req, res) => {
@@ -194,17 +196,12 @@ app.post('/api/login', async (req, res) => {
     const user = userResult.rows[0];
     // Fetch cards
     const cardsResult = await pool.query('SELECT * FROM cards WHERE user_id = $1', [user.id]);
-    // Fetch transactions for all cards
-    const cardIds = cardsResult.rows.map(card => card.id);
-    let transactions = [];
-    if (cardIds.length > 0) {
-      const txResult = await pool.query('SELECT * FROM transactions WHERE card_id = ANY($1::int[])', [cardIds]);
-      transactions = txResult.rows;
-    }
+    // Fetch ALL transactions for the user, including those without cards (eNETS, NETS QR)
+    const txResult = await pool.query('SELECT * FROM transactions WHERE user_id = $1 ORDER BY time DESC', [user.id]);
     res.json({
       user: { id: user.id, username: user.username },
       cards: cardsResult.rows,
-      transactions
+      transactions: txResult.rows
     });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
@@ -228,14 +225,9 @@ app.get('/api/transactions', async (req, res) => {
   const userId = req.query.user_id;
   if (!userId) return res.status(400).json({ error: 'Missing user_id' });
   try {
-    const cardsResult = await pool.query('SELECT id FROM cards WHERE user_id = $1', [userId]);
-    const cardIds = cardsResult.rows.map(card => card.id);
-    let transactions = [];
-    if (cardIds.length > 0) {
-      const txResult = await pool.query('SELECT * FROM transactions WHERE card_id = ANY($1::int[])', [cardIds]);
-      transactions = txResult.rows;
-    }
-    res.json(transactions);
+    // Fetch ALL transactions for the user, including those without cards (eNETS, NETS QR)
+    const txResult = await pool.query('SELECT * FROM transactions WHERE user_id = $1 ORDER BY time DESC', [userId]);
+    res.json(txResult.rows);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch transactions', details: err.message });
   }
@@ -306,10 +298,14 @@ app.post('/api/cards/topup', async (req, res) => {
     
     console.log('Card updated:', updateResult.rows[0]);
     
+    // Get user_id from the card
+    const userResult = await pool.query('SELECT user_id FROM cards WHERE id = $1', [card_id]);
+    const user_id = userResult.rows[0].user_id;
+    
     // Insert a transaction record
     const transactionResult = await pool.query(
-      'INSERT INTO transactions (card_id, name, time, amount, type) VALUES ($1, $2, NOW(), $3, $4) RETURNING *',
-      [card_id, 'Top-up', amount, 'income']
+      'INSERT INTO transactions (user_id, card_id, name, time, amount, type) VALUES ($1, $2, $3, NOW(), $4, $5) RETURNING *',
+      [user_id, card_id, 'Top-up', amount, 'income']
     );
     
     console.log('Transaction created:', transactionResult.rows[0]);
@@ -377,14 +373,15 @@ app.post('/api/transactions', async (req, res) => {
   console.log('Transaction request received:', req.body);
   const { user_id, card_id, name, amount, type } = req.body;
   // Ignore any 'time' sent from frontend
-  if (!card_id || !name || amount === undefined || !type) {
-    console.log('Missing required fields:', { card_id, name, amount, type });
+  // card_id can be null for external payment methods (eNETS, NETS QR)
+  if (!user_id || !name || amount === undefined || !type) {
+    console.log('Missing required fields:', { user_id, name, amount, type });
     return res.status(400).json({ error: 'Missing required fields' });
   }
   try {
     const transactionResult = await pool.query(
-      'INSERT INTO transactions (card_id, name, time, amount, type) VALUES ($1, $2, NOW(), $3, $4) RETURNING *',
-      [card_id, name, amount, type]
+      'INSERT INTO transactions (user_id, card_id, name, time, amount, type) VALUES ($1, $2, $3, NOW(), $4, $5) RETURNING *',
+      [user_id, card_id, name, amount, type]
     );
     console.log('Transaction created:', transactionResult.rows[0]);
     res.status(201).json(transactionResult.rows[0]);
@@ -409,7 +406,7 @@ app.get('/api/users/:id', async (req, res) => {
   }
 });
 
-// Split Bill endpoint
+// Split Bill endpoint for new payments
 app.post('/api/split-bill', async (req, res) => {
   const { payer, payerEmail, amount, friends, message, cardId } = req.body;
   if (!payer || !payerEmail || !amount || !Array.isArray(friends) || friends.length === 0 || !cardId) {
@@ -424,10 +421,14 @@ app.post('/api/split-bill', async (req, res) => {
     if (deductResult.rows.length === 0) {
       return res.status(400).json({ error: 'Insufficient balance on selected card' });
     }
+    // Get user_id from the card
+    const userResult = await pool.query('SELECT user_id FROM cards WHERE id = $1', [cardId]);
+    const user_id = userResult.rows[0].user_id;
+    
     // Add transaction for full bill amount
     await pool.query(
-      'INSERT INTO transactions (card_id, name, time, amount, type) VALUES ($1, $2, NOW(), $3, $4)',
-      [cardId, 'Split Bill Payment', -Math.abs(amount), 'expense']
+      'INSERT INTO transactions (user_id, card_id, name, time, amount, type) VALUES ($1, $2, $3, NOW(), $4, $5)',
+      [user_id, cardId, 'Split Bill Payment', -Math.abs(amount), 'expense']
     );
     // Calculate split amount (include payer)
     const totalPeople = friends.length + 1;
@@ -581,6 +582,171 @@ This payment request was sent from EasyGame Payment App`;
   } catch (err) {
     console.error('Split bill error:', err);
     res.status(500).json({ error: 'Failed to process split bill', details: err.message });
+  }
+});
+
+// Generate QR codes for existing transactions (no payment required)
+app.post('/api/split-bill/existing', async (req, res) => {
+  const { payer, payerEmail, amount, friends, message } = req.body;
+  if (!payer || !payerEmail || !amount || !Array.isArray(friends) || friends.length === 0) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  try {
+    // Calculate split amount (include payer)
+    const totalPeople = friends.length + 1;
+    const splitAmount = (amount / totalPeople).toFixed(2);
+    
+    // Generate NETS QR code for split bill
+    const txnId = `split_bill_existing_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    const netsQrCode = await generateSimulatedQrCode(txnId, splitAmount);
+    
+    console.log('Generated QR code for existing transaction split bill:', {
+      txnId,
+      splitAmount,
+      qrCodeLength: netsQrCode ? netsQrCode.length : 0
+    });
+    
+    // Store split bill payment record (no user_id since no payment made)
+    await pool.query(
+      'INSERT INTO payments (user_id, txn_id, retrieval_ref, amount, payment_method, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
+      [null, txnId, `split_existing_${Date.now()}`, splitAmount, 'ENETS_QR', 'pending']
+    );
+
+    // Separate email and WhatsApp friends
+    const emailFriends = friends.filter(friend => friend.type === 'email');
+    const whatsappFriends = friends.filter(friend => friend.type === 'whatsapp');
+
+    // Send emails to email friends
+    if (emailFriends.length > 0) {
+      // Set up nodemailer
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      // Send email to each friend
+      for (const friend of emailFriends) {
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: friend.email,
+          subject: `NETS QR Payment Request from ${payer}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #003da6; text-align: center;">NETS QR Payment Request</h2>
+              <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #333; margin-bottom: 15px;">Split Bill Details</h3>
+                <p><strong>From:</strong> ${payer}</p>
+                <p><strong>Amount:</strong> SGD $${splitAmount}</p>
+                <p><strong>Message:</strong> ${message || 'Split bill payment'}</p>
+                <p><strong>Transaction ID:</strong> ${txnId}</p>
+              </div>
+              <div style="text-align: center; margin: 30px 0;">
+                <h3 style="color: #333; margin-bottom: 15px;">Scan NETS QR Code to Pay</h3>
+                <div style="background: white; padding: 20px; border: 2px solid #e0e0f0; border-radius: 10px; display: inline-block;">
+                  <img src="data:image/svg+xml;base64,${netsQrCode}" alt="NETS QR Code" style="max-width: 250px; height: auto; display: block; margin: 0 auto;" />
+                </div>
+                <p style="color: #666; margin-top: 15px; font-size: 14px;">
+                  📱 Open your NETSPay app and scan this QR code to complete the payment
+                </p>
+              </div>
+              <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h4 style="color: #0066cc; margin-bottom: 10px;">How to Pay:</h4>
+                <ol style="color: #333; line-height: 1.6;">
+                  <li>Open your NETSPay mobile app</li>
+                  <li>Tap on "Scan QR" or "Pay QR"</li>
+                  <li>Point your camera at the QR code above</li>
+                  <li>Confirm the payment amount of SGD $${splitAmount}</li>
+                  <li>Complete the payment</li>
+                </ol>
+              </div>
+              <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <p style="color: #856404; margin: 0; font-weight: 600;">
+                  💡 This is a split bill request for an existing transaction. The main payment has already been made.
+                </p>
+              </div>
+            </div>`
+        };
+
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log(`Email sent to ${friend.email}`);
+        } catch (emailErr) {
+          console.error('Failed to send email to', friend.email, emailErr);
+          // Continue with other friends even if one fails
+        }
+      }
+    }
+
+    // Send WhatsApp messages to WhatsApp friends
+    if (whatsappFriends.length > 0) {
+      // Check if Twilio credentials are available
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_FROM) {
+        console.log('Twilio credentials not configured. Skipping WhatsApp messages.');
+        // Continue without failing the request
+      } else {
+        try {
+          const twilio = require('twilio');
+          const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+          
+          for (const friend of whatsappFriends) {
+            const whatsappMessage = `💰 *NETS QR Payment Request*
+
+*From:* ${payer}
+*Amount:* SGD $${splitAmount}
+*Message:* ${message || 'Split bill payment'}
+*Transaction ID:* ${txnId}
+
+📧 *QR Code Sent to Email*
+
+Since WhatsApp cannot display QR codes directly, we've sent the NETS QR code to your email address. Please check your email for the QR code to complete the payment.
+
+*How to Pay:*
+1. Check your email for the NETS QR code
+2. Open your NETSPay mobile app
+3. Tap on "Scan QR" or "Pay QR"
+4. Point your camera at the QR code from your email
+5. Confirm the payment amount of SGD $${splitAmount}
+6. Complete the payment
+
+*Alternative:* You can also use the NETSPay app to scan any NETS QR code at participating merchants.
+
+💡 *This is a split bill request for an existing transaction. The main payment has already been made.*
+
+This payment request was sent from EasyGame Payment App`;
+
+            try {
+              await client.messages.create({
+                body: whatsappMessage,
+                from: process.env.TWILIO_WHATSAPP_FROM,
+                to: `whatsapp:${friend.phone}`
+              });
+              console.log(`WhatsApp message sent to ${friend.phone}`);
+            } catch (whatsappErr) {
+              console.error('Failed to send WhatsApp message to', friend.phone, whatsappErr);
+              // Continue with other friends even if one fails
+            }
+          }
+        } catch (twilioErr) {
+          console.error('Twilio setup error:', twilioErr);
+        }
+      }
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'QR codes generated and sent successfully',
+      txnId,
+      splitAmount,
+      emailSent: emailFriends.length,
+      whatsappSent: whatsappFriends.length
+    });
+    
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to generate QR codes', details: err.message });
   }
 });
 
@@ -1945,14 +2111,14 @@ app.post('/api/check-in', async (req, res) => {
       
       // Add coins to user's game stats
       await pool.query(
-        `INSERT INTO game_stats (user_id, game_type, total_plays, total_wins, total_losses, credits_earned, last_played)
-         VALUES ($1, 'check_in', 1, 1, 0, 1, NOW())
+        `INSERT INTO game_stats (user_id, game_type, games_played, wins, total_credits_earned, updated_at)
+         VALUES ($1, 'check_in', 1, 1, 1, NOW())
          ON CONFLICT (user_id, game_type) 
          DO UPDATE SET 
-           total_plays = game_stats.total_plays + 1,
-           total_wins = game_stats.total_wins + 1,
-           credits_earned = game_stats.credits_earned + 1,
-           last_played = NOW()`,
+           games_played = game_stats.games_played + 1,
+           wins = game_stats.wins + 1,
+           total_credits_earned = game_stats.total_credits_earned + 1,
+           updated_at = NOW()`,
         [userId]
       );
 
@@ -1960,33 +2126,46 @@ app.post('/api/check-in', async (req, res) => {
         success: true,
         coinsEarned: 1,
         checkInData: {
-          last_check_in: new Date(),
-          current_streak: 1,
-          total_check_ins: 1
+          lastCheckIn: new Date(),
+          currentStreak: 1,
+          totalCheckIns: 1
         }
       });
       return;
     }
 
     const checkInData = result.rows[0];
-    const today = new Date().toDateString();
-    const lastCheckIn = checkInData.last_check_in ? new Date(checkInData.last_check_in).toDateString() : null;
+    
+    // Use more robust date comparison - compare only year, month, and day
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    let lastCheckIn = null;
+    if (checkInData.last_check_in) {
+      const lastCheckInDate = new Date(checkInData.last_check_in);
+      lastCheckIn = new Date(lastCheckInDate.getFullYear(), lastCheckInDate.getMonth(), lastCheckInDate.getDate());
+    }
 
     // Check if already checked in today
-    if (lastCheckIn === today) {
+    if (lastCheckIn && lastCheckIn.getTime() === today.getTime()) {
+      console.log('User already checked in today. Last check-in:', lastCheckIn, 'Today:', today);
       return res.json({ 
         success: false,
         message: 'Already checked in today',
-        checkInData: checkInData
+        checkInData: {
+          lastCheckIn: checkInData.last_check_in,
+          currentStreak: checkInData.current_streak,
+          totalCheckIns: checkInData.total_check_ins
+        }
       });
     }
 
     // Calculate streak
     let newStreak = 1;
     if (lastCheckIn) {
-      const yesterday = new Date();
+      const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      if (lastCheckIn === yesterday.toDateString()) {
+      if (lastCheckIn.getTime() === yesterday.getTime()) {
         newStreak = checkInData.current_streak + 1;
       }
     }
@@ -2004,14 +2183,14 @@ app.post('/api/check-in', async (req, res) => {
 
     // Add coins to user's game stats
     await pool.query(
-      `INSERT INTO game_stats (user_id, game_type, total_plays, total_wins, total_losses, credits_earned, last_played)
-       VALUES ($1, 'check_in', 1, 1, 0, 1, NOW())
+      `INSERT INTO game_stats (user_id, game_type, games_played, wins, total_credits_earned, updated_at)
+       VALUES ($1, 'check_in', 1, 1, 1, NOW())
        ON CONFLICT (user_id, game_type) 
        DO UPDATE SET 
-         total_plays = game_stats.total_plays + 1,
-         total_wins = game_stats.total_wins + 1,
-         credits_earned = game_stats.credits_earned + 1,
-         last_played = NOW()`,
+         games_played = game_stats.games_played + 1,
+         wins = game_stats.wins + 1,
+         total_credits_earned = game_stats.total_credits_earned + 1,
+         updated_at = NOW()`,
       [userId]
     );
 
@@ -2019,9 +2198,9 @@ app.post('/api/check-in', async (req, res) => {
       success: true,
       coinsEarned: 1,
       checkInData: {
-        last_check_in: new Date(),
-        current_streak: newStreak,
-        total_check_ins: checkInData.total_check_ins + 1
+        lastCheckIn: new Date(),
+        currentStreak: newStreak,
+        totalCheckIns: checkInData.total_check_ins + 1
       }
     });
 
@@ -2095,6 +2274,79 @@ app.post('/api/vouchers/reset', async (req, res) => {
       error: 'Failed to reset voucher data', 
       details: error.message 
     });
+  }
+});
+
+// NFC Transactions API endpoints
+app.post('/api/nfc-transactions', async (req, res) => {
+  try {
+    const { sender_email, recipient_email, amount, card_id } = req.body;
+    
+    if (!sender_email || !recipient_email || !amount || !card_id) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const result = await pool.query(
+      'INSERT INTO nfc_transactions (sender_email, recipient_email, amount, card_id, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [sender_email, recipient_email, amount, card_id, 'sent']
+    );
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating NFC transaction:', error);
+    res.status(500).json({ error: 'Failed to create NFC transaction' });
+  }
+});
+
+app.get('/api/nfc-transactions/receive/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM nfc_transactions WHERE recipient_email = $1 AND status = $2 ORDER BY timestamp DESC',
+      [email, 'sent']
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching pending NFC transactions:', error);
+    res.status(500).json({ error: 'Failed to fetch pending transactions' });
+  }
+});
+
+app.put('/api/nfc-transactions/:id/receive', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      'UPDATE nfc_transactions SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
+      ['received', id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'NFC transaction not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating NFC transaction:', error);
+    res.status(500).json({ error: 'Failed to update NFC transaction' });
+  }
+});
+
+app.get('/api/nfc-transactions/history/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM nfc_transactions WHERE (sender_email = $1 OR recipient_email = $1) ORDER BY timestamp DESC LIMIT 50',
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching NFC transaction history:', error);
+    res.status(500).json({ error: 'Failed to fetch transaction history' });
   }
 });
 

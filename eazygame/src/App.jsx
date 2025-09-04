@@ -10,14 +10,27 @@ import Modal from './components/Modal/Modal';
 import { signIn, signUp, signOut, getCurrentUser, updateCurrentUserData, deleteCurrentUser } from './userStore';
 import API_BASE_URL from './config.js';
 import './App.css';
+// Import icons using dynamic imports to ensure proper bundling
+const homeIcon = new URL('./assets/home.png', import.meta.url).href;
+const merchantsIcon = new URL('./assets/merchant.png', import.meta.url).href;
+const cameraIcon = new URL('./assets/camera1.png', import.meta.url).href;
+const nearmeIcon = new URL('./assets/nearme.png', import.meta.url).href;
+const aieazeIcon = new URL('./assets/aieaze.png', import.meta.url).href;
 
 const TABS = [
-  { key: 'home', label: 'Home', icon: '🏠' },
-  { key: 'merchants', label: 'Shop', icon: '🛒' },
-  { key: 'scanqr', label: 'Scan QR', icon: '📷' },
-  { key: 'nearme', label: 'Near Me', icon: '📍' },
-  { key: 'aieaze', label: 'AI Eaze', icon: '🤖' },
+  { key: 'home', label: 'Home', icon: homeIcon },
+  { key: 'merchants', label: 'Shop', icon: merchantsIcon },
+  { key: 'scanqr', label: 'Scan QR', icon: cameraIcon },
+  { key: 'nearme', label: 'Near Me', icon: nearmeIcon },
+  { key: 'aieaze', label: 'AI Eaze', icon: aieazeIcon },
 ];
+
+// Debug logging
+console.log('TABS configuration:', TABS);
+console.log('homeIcon:', homeIcon);
+console.log('merchantsIcon:', merchantsIcon);
+console.log('nearmeIcon:', nearmeIcon);
+console.log('aieazeIcon:', aieazeIcon);
 
 export default function App() {
   const [tab, setTab] = useState('home');

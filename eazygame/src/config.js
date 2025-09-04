@@ -1,9 +1,11 @@
-// API Configuration
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://netseazygame-0dd1ff80b2d1.herokuapp.com'  // Heroku backend URL
-  : 'http://localhost:3002';  // Local development
+const API_BASE_URL = import.meta.env?.PROD
+  ? '' // same-origin in production -> https://eazygamenets-.../api/...
+  : 'http://localhost:3002'; // local dev
 
 export default API_BASE_URL;
+
+
+
 
 
 

@@ -225,7 +225,7 @@
 }
 
 .sendBtn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  background: #003da6;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -233,10 +233,11 @@
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .sendBtn:hover {
+  background: #002d7a;
   transform: translateY(-2px);
 }
 

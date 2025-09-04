@@ -11,6 +11,11 @@ import SendMoneyModal from '../../components/SendMoneyModal/SendMoneyModal';
 import VoucherModal from '../../components/VoucherModal/VoucherModal';
 import netsLogo from '../../assets/nets-40.png';
 
+// Helper function to get current user ID
+const getCurrentUser = () => {
+  return localStorage.getItem('user_id');
+};
+
 // Import product images
 import handbag from '../../assets/handbag.jpg';
 import laptop from '../../assets/laptop.jpg';
@@ -102,8 +107,58 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
     fetchTransactions(userId);
   };
 
-  const handlePaymentSuccess = (paymentData) => {
+  const handlePaymentSuccess = async (paymentData) => {
     console.log('Payment successful:', paymentData);
+    
+    // Create transaction record for the successful payment
+    try {
+      const userId = getCurrentUser();
+      if (!userId) {
+        console.error('No user ID found');
+        return;
+      }
+
+      // Determine payment method and transaction details
+      let paymentMethod = 'Unknown';
+      let transactionName = modalProduct?.name || 'Merchant Purchase';
+      
+      if (paymentData.method === 'ENETS') {
+        paymentMethod = 'eNETS Payment';
+        transactionName = `${modalProduct?.name || 'Merchant Purchase'} (ENETS)`;
+      } else if (paymentData.method === 'ENETS_QR') {
+        paymentMethod = 'NETS QR Payment';
+        transactionName = `${modalProduct?.name || 'Merchant Purchase'} (NETS QR)`;
+      } else if (paymentData.method === 'NETS_PREPAID') {
+        paymentMethod = 'NETS Prepaid Card';
+        transactionName = `${modalProduct?.name || 'Merchant Purchase'} (Prepaid Card)`;
+      }
+
+      // Create transaction record
+      const transactionResponse = await fetch('http://localhost:3002/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userId,
+          card_id: paymentData.method === 'NETS_PREPAID' ? paymentData.cardId : null, // card_id for prepaid, null for external
+          name: transactionName,
+          amount: modalProduct?.price || 0,
+          type: 'expense'
+        })
+      });
+
+      if (transactionResponse.ok) {
+        const transaction = await transactionResponse.json();
+        console.log('Transaction created successfully:', transaction);
+        
+        // Refresh transactions to show the new one
+        refreshTransactions(userId);
+      } else {
+        console.error('Failed to create transaction:', await transactionResponse.text());
+      }
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+    }
+
     alert('Payment successful! Your order has been processed.');
     setShowPaymentGateway(false);
     setModalProduct(null);

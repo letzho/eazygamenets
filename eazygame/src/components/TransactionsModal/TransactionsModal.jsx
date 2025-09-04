@@ -40,9 +40,21 @@ export default function TransactionsModal({ open, onClose, transactions, cards }
   }, [transactions, filterType, sortBy, searchTerm]);
 
   // Get card info for transaction
-  const getCardInfo = (cardId) => {
+  const getCardInfo = (cardId, transactionName) => {
+    if (!cardId) {
+      // External payment method (eNETS, NETS QR)
+      if (transactionName.includes('(ENETS)')) {
+        return { maskedNumber: 'eNETS Payment', type: 'eNETS' };
+      } else if (transactionName.includes('(NETS QR)')) {
+        return { maskedNumber: 'NETS QR Payment', type: 'NETS QR' };
+      } else {
+        return { maskedNumber: 'External Payment', type: 'External' };
+      }
+    }
+    
+    // Card-based transaction
     const card = cards?.find(c => c.id === cardId);
-    if (!card) return { maskedNumber: 'Unknown', type: 'Unknown' };
+    if (!card) return { maskedNumber: 'Unknown Card', type: 'Unknown' };
     
     const digits = (card.number || '').replace(/\D/g, '');
     const maskedNumber = digits.length >= 4
@@ -137,7 +149,7 @@ export default function TransactionsModal({ open, onClose, transactions, cards }
           ) : (
             <div className={styles.transactionsList}>
               {filteredAndSortedTransactions.map((txn, index) => {
-                const cardInfo = getCardInfo(txn.card_id);
+                const cardInfo = getCardInfo(txn.card_id, txn.name);
                 const isIncome = txn.type === 'income';
                 
                 return (

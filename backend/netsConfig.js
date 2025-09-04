@@ -1,152 +1,118 @@
-const axios = require('axios');
-const CryptoJS = require('crypto-js');
-require('dotenv').config();
+const crypto = require('crypto');
 
-// NETS API Configuration - Using Sandbox environment
+// NETS Configuration
 const NETS_CONFIG = {
-  baseUrl: 'https://sandbox.nets.openapipaas.com/api/v1',
-  apiKey: process.env.SANDBOX_API_KEY, // Your sandbox API key
-  projectId: process.env.PROJECT_ID,
-  txnId: process.env.TXN_ID,
-  retrievalRef: process.env.RETRIEVAL_REF,
-  secretKey: process.env.SECRET_KEY || 'your-secret-key'
+  KEY_ID: process.env.NETS_KEY_ID || 'your_key_id_here',
+  SECRET_KEY: process.env.NETS_SECRET_KEY || 'your_secret_key_here',
+  NETS_MID: process.env.NETS_MID || 'UMID_887770001',
+  B2S_TXN_END_URL: process.env.B2S_TXN_END_URL || 'https://sit2.enets.sg/MerchantApp/sim/b2sTxnEndURL.jsp',
+  S2S_TXN_END_URL: process.env.S2S_TXN_END_URL || 'https://sit2.enets.sg/MerchantApp/rest/s2sTxnEnd',
+  NETS_API_BASE_URL: process.env.NETS_API_BASE_URL || 'https://sandbox.nets.openapipaas.com',
+  SANDBOX_API_KEY: process.env.SANDBOX_API_KEY || 'bY57TrFMmuAhHKi7nlym'
 };
 
-// API Headers - matching your working configuration
-const getHeaders = () => ({
-  'api-key': NETS_CONFIG.apiKey,
-  'project-id': NETS_CONFIG.projectId,
-  'Content-Type': 'application/json'
-});
-
-// Generate HMAC signature
-const generateHMAC = (payload) => {
-  const message = JSON.stringify(payload);
-  const signature = CryptoJS.HmacSHA256(message, NETS_CONFIG.secretKey);
-  return CryptoJS.enc.Base64.stringify(signature);
-};
-
-// Generate unique transaction ID
-const generateTxnId = () => {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 15);
-  const prefix = NETS_CONFIG.txnId || 'txn';
-  return `${prefix}_${timestamp}_${random}`;
-};
-
-// Generate unique retrieval reference
-const generateRetrievalRef = () => {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 15);
-  const prefix = NETS_CONFIG.retrievalRef || 'ref';
-  return `${prefix}_${timestamp}_${random}`;
-};
-
-// Payment method configurations
+// Payment Methods Configuration
 const PAYMENT_METHODS = {
   ENETS: {
     name: 'eNETS',
-    code: 'ENETS',
-    timeout: 125, // 2 minutes 5 seconds
-    requiresOTP: false
+    timeout: 300, // 5 minutes
+    description: 'Pay with eNETS'
   },
   ENETS_QR: {
     name: 'eNETS QR',
-    code: 'ENETS_QR',
-    timeout: 605, // 10 minutes 5 seconds
-    requiresOTP: false
+    timeout: 300, // 5 minutes
+    description: 'Pay with eNETS QR'
   },
-  VISA: {
-    name: 'VISA',
-    code: 'VISA',
-    timeout: 605, // 10 minutes 5 seconds
-    requiresOTP: true, // Can be with or without OTP
-    otpOptions: ['with_otp', 'without_otp']
-  },
-  MASTERCARD: {
-    name: 'Master Card',
-    code: 'MASTERCARD',
-    timeout: 605, // 10 minutes 5 seconds
-    requiresOTP: true, // Can be with or without OTP
-    otpOptions: ['with_otp', 'without_otp']
+  NETS_PREPAID: {
+    name: 'NETS Prepaid Card',
+    timeout: 60, // 1 minute
+    description: 'Pay with NETS Prepaid Card'
   }
 };
 
-// Create NETS QR payment request payload (matching working implementation)
-const createNetsQrPayload = (amount, txnId, mobile = 0) => {
-  return {
-    txn_id: txnId,
-    amt_in_dollars: amount.toString(),
-    notify_mobile: mobile
-  };
-};
+// Generate HMAC for NETS API
+function generateHMAC(payload) {
+  const concatPayloadAndSecretKey = payload + NETS_CONFIG.SECRET_KEY;
+  const hmac = crypto.createHmac('sha256', NETS_CONFIG.SECRET_KEY);
+  hmac.update(concatPayloadAndSecretKey);
+  return hmac.digest('base64');
+}
 
-// Create NETS B2S Transaction Request (txnReq) message
-const createPaymentPayload = (amount, paymentMethod, otpType = null) => {
-  const merchantTxnRef = generateTxnId();
-  const merchantTxnDtm = new Date().toISOString().replace('T', ' ').replace('Z', '');
-  
-  // Step 1: Create txnReq message according to NETS specification
-  const txnReq = {
-    ss: "1", // default
+// Create payment payload for B2S transactions
+function createPaymentPayload(amount, paymentMethod, otpType = 'SMS') {
+  const merchantTxnRef = `TXN_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+  const merchantTxnDtm = new Date().toISOString().replace('T', ' ').substring(0, 19);
+  const txnAmount = Math.round(amount * 100); // Convert to cents
+
+  const txnReq = JSON.stringify({
+    ss: "1",
     msg: {
-      txnAmount: (amount * 100).toString(), // Convert to cents
+      txnAmount: txnAmount.toString(),
       merchantTxnRef: merchantTxnRef,
-      b2sTxnEndURL: "https://sit2.enets.sg/MerchantApp/sim/b2sTxnEndURL.jsp", // Replace with your callback URL
-      s2sTxnEndURL: "https://sit2.enets.sg/MerchantApp/rest/s2sTxnEnd", // Replace with your callback URL
-      netsMid: NETS_CONFIG.projectId || "UMID_887770001", // Your merchant ID
+      b2sTxnEndURL: NETS_CONFIG.B2S_TXN_END_URL,
+      s2sTxnEndURL: NETS_CONFIG.S2S_TXN_END_URL,
+      netsMid: NETS_CONFIG.NETS_MID,
       merchantTxnDtm: merchantTxnDtm,
-      submissionMode: "B", // default value
-      paymentType: "SALE", // default value
-      paymentMode: "", // default value
-      clientType: "W", // default value
-      currencyCode: "SGD", // default value
-      merchantTimeZone: "+8:00", // default value
-      netsMidIndicator: "U" // default value
+      otpType: otpType,
+      paymentMethod: paymentMethod
     }
-  };
+  });
 
-  // Step 2: Generate MAC value of txnReq
+  const keyId = NETS_CONFIG.KEY_ID;
   const macValue = generateHMAC(txnReq);
 
   return {
-    txnReq: txnReq,
-    keyId: NETS_CONFIG.apiKey,
-    macValue: macValue,
-    merchantTxnRef: merchantTxnRef,
-    merchantTxnDtm: merchantTxnDtm
+    txnReq,
+    keyId,
+    macValue,
+    merchantTxnRef,
+    merchantTxnDtm
   };
-};
+}
 
-// Make API request to NETS
-const makeNetsRequest = async (endpoint, payload) => {
+// Create NETS QR payload
+function createNetsQrPayload(amount, txnId, notifyMobile = 0) {
+  return {
+    txn_id: txnId,
+    amt_in_dollars: amount,
+    notify_mobile: notifyMobile
+  };
+}
+
+// Make request to NETS API
+async function makeNetsRequest(endpoint, payload) {
+  const url = `${NETS_CONFIG.NETS_API_BASE_URL}${endpoint}`;
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${NETS_CONFIG.SANDBOX_API_KEY}`,
+    'Accept': 'application/json'
+  };
+
   try {
-    const headers = getHeaders();
-    const signature = generateHMAC(payload);
-    headers['signature'] = signature;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(payload)
+    });
 
-    console.log('Making NETS API request to:', `${NETS_CONFIG.baseUrl}${endpoint}`);
-    console.log('Payload:', payload);
-    console.log('Headers:', headers);
+    if (!response.ok) {
+      throw new Error(`NETS API request failed: ${response.status} ${response.statusText}`);
+    }
 
-    const response = await axios.post(`${NETS_CONFIG.baseUrl}${endpoint}`, payload, { headers });
-    console.log('NETS API response:', response.data);
-    return response.data;
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('NETS API Error:', error.response?.data || error.message);
-    console.error('Full error:', error);
+    console.error('NETS API request error:', error);
     throw error;
   }
-};
+}
 
 module.exports = {
-  NETS_CONFIG,
   PAYMENT_METHODS,
   createPaymentPayload,
   createNetsQrPayload,
   makeNetsRequest,
-  generateTxnId,
-  generateRetrievalRef,
-  getHeaders,
-  generateHMAC
+  generateHMAC,
+  NETS_CONFIG
 };

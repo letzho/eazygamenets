@@ -11,6 +11,8 @@ import QrScanModal from '../../components/QrScanModal';
 import UserIcon from '../../components/UserIcon/UserIcon';
 import BalanceDetailsModal from '../../components/BalanceDetailsModal/BalanceDetailsModal';
 import TransactionsModal from '../../components/TransactionsModal/TransactionsModal';
+import StatsModal from '../../components/StatsModal/StatsModal';
+import NFCModal from '../../components/NFCModal/NFCModal';
 import netsLogo from '../../assets/nets-40.png';
 import Jack from '../../assets/Jack.jpg';
 import Nurul from '../../assets/Nurul.jpg';
@@ -89,7 +91,7 @@ function SplitBillModal(props) {
     setSending(true);
     setResult(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/split-bill`, {
+              const res = await fetch(`${API_BASE_URL}/api/split-bill`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -120,9 +122,9 @@ function SplitBillModal(props) {
         setSelectedFriends([]);
         setMessage('');
         // Refresh cards and transactions
-        const userId = getCurrentUser();
-        if (userId) {
-          fetch(`${API_BASE_URL}/api/cards?user_id=${userId}`)
+                  const userId = getCurrentUser();
+          if (userId) {
+            fetch(`${API_BASE_URL}/api/cards?user_id=${userId}`)
             .then(res => res.json())
             .then(data => {
               const cardData = Array.isArray(data)
@@ -163,16 +165,16 @@ function SplitBillModal(props) {
       <div style={{ 
         background: 'linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #fff5f5 100%)',
         borderRadius: '24px',
-        padding: '20px',
+        padding: '28px',
         minWidth: '380px',
         maxWidth: '480px',
         width: '100%',
-        maxHeight: '78vh',
+        maxHeight: '90vh',
         boxShadow: '0 20px 60px rgba(0, 61, 166, 0.15)',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
+        gap: '20px',
         border: '2px solid #e5e7eb',
         overflow: 'hidden'
       }}>
@@ -181,7 +183,7 @@ function SplitBillModal(props) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '8px'
+          marginBottom: '16px'
         }}>
           <div style={{
             display: 'flex',
@@ -243,7 +245,7 @@ function SplitBillModal(props) {
         <form onSubmit={handleSubmit} style={{ 
           display: 'flex', 
           flexDirection: 'column', 
-          gap: '8px',
+          gap: '16px',
           flex: 1,
           overflowY: 'auto',
           paddingRight: '8px'
@@ -256,7 +258,7 @@ function SplitBillModal(props) {
               fontSize: '14px',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
-              marginBottom: '8px',
+              marginBottom: '12px',
               display: 'block'
             }}>
               Total Bill Amount ($)
@@ -300,7 +302,7 @@ function SplitBillModal(props) {
               fontSize: '14px',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
-              marginBottom: '8px',
+              marginBottom: '12px',
               display: 'block'
             }}>
               Pay with Card
@@ -335,35 +337,35 @@ function SplitBillModal(props) {
                 <option value="">No cards available</option>
               ) : (
                 cards.map(card => (
-                  <option key={card.id} value={card.id}>
-                    **** **** **** {String(card.number).slice(-4)} (Bal: ${Number(card.balance).toFixed(2)})
-                  </option>
+                <option key={card.id} value={card.id}>
+                  **** **** **** {String(card.number).slice(-4)} (Bal: ${Number(card.balance).toFixed(2)})
+                </option>
                 ))
               )}
             </select>
           </div>
 
                       {/* Friends to Split With */}
-            <div>
+          <div>
               <label style={{ 
                 fontWeight: 600, 
                 color: '#374151',
                 fontSize: '14px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
-                marginBottom: '12px',
+                marginBottom: '16px',
                 display: 'block'
               }}>
                 Friends to Split With
-              </label>
+                </label>
               
               <div style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
-                gap: '6px', 
-                maxHeight: '120px', 
+                gap: '10px', 
+                maxHeight: '200px', 
                 overflowY: 'auto',
-                padding: '4px',
+                padding: '8px',
                 border: '1px solid #e5e7eb',
                 borderRadius: '12px',
                 background: '#fafafa',
@@ -448,14 +450,14 @@ function SplitBillModal(props) {
                             Email
                           </span>
                         )}
-                      </div>
+            </div>
                       <div style={{ 
                         color: '#6b7280', 
                         fontSize: '13px',
                         marginTop: '2px'
                       }}>
                         {friend.type === 'whatsapp' ? friend.phone : friend.email}
-                      </div>
+          </div>
                     </div>
                     {isSelected && (
                       <div style={{
@@ -490,7 +492,7 @@ function SplitBillModal(props) {
               fontSize: '14px',
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
-              marginBottom: '8px',
+              marginBottom: '12px',
               display: 'block'
             }}>
               Message (optional)
@@ -525,7 +527,7 @@ function SplitBillModal(props) {
           </div>
 
           {/* Split Amount Display */}
-          {selectedFriends.length > 0 && localAmount && (
+            {selectedFriends.length > 0 && localAmount && (
             <div style={{ 
               background: 'linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%)',
               border: '2px solid #003da6',
@@ -541,7 +543,7 @@ function SplitBillModal(props) {
                 marginBottom: '4px'
               }}>
                 Each pays: ${(parseFloat(localAmount) / (selectedFriends.length + 1)).toFixed(2)}
-              </div>
+          </div>
               <div style={{ 
                 color: '#6b7280', 
                 fontSize: '13px',
@@ -1197,6 +1199,22 @@ const SaveConfirmationPopup = ({ open, onClose, message, type = 'settings' }) =>
 };
 
 export default function Home({ isSignedIn, user, cards, setCards, onProfileClick, onTabChange, userVouchers = 0, setUserVouchers = null, onVoucherUse = null }) {
+  // Debug user object
+  console.log('Home component - user object:', user);
+  console.log('Home component - isSignedIn:', isSignedIn);
+  
+  // Add CSS animation for spinner
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
   const [transactions, setTransactions] = useState([]);
   const [showAddCard, setShowAddCard] = useState(false);
   const [topUpCardId, setTopUpCardId] = useState(null);
@@ -1216,13 +1234,20 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
   const paymentHandledRef = useRef(false);
   const [showSplitBill, setShowSplitBill] = useState(false);
   const [splitBillAmount, setSplitBillAmount] = useState('');
-  const [showSplitBillChoice, setShowSplitBillChoice] = useState(false);
-  const [showSplitBillQR, setShowSplitBillQR] = useState(false);
-  const [splitBillScanError, setSplitBillScanError] = useState('');
-  const [splitBillUploadedImage, setSplitBillUploadedImage] = useState(null);
+      const [showSplitBillChoice, setShowSplitBillChoice] = useState(false);
+    const [showSplitBillQR, setShowSplitBillQR] = useState(false);
+    const [splitBillScanError, setSplitBillScanError] = useState('');
+    const [splitBillUploadedImage, setSplitBillUploadedImage] = useState(null);
+    const [showTransactionSplitModal, setShowTransactionSplitModal] = useState(false);
+    const [selectedTransactionForSplit, setSelectedTransactionForSplit] = useState(null);
+  const [selectedFriendsForSplit, setSelectedFriendsForSplit] = useState([]);
+  const [sendingSplitBill, setSendingSplitBill] = useState(false);
+  const [splitBillResult, setSplitBillResult] = useState(null);
   const splitBillFileInputRef = useRef();
   const [showBalanceDetailsModal, setShowBalanceDetailsModal] = useState(false);
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [showNFCModal, setShowNFCModal] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [currentGame, setCurrentGame] = useState(null);
   const [userCoins, setUserCoins] = useState(0);
@@ -1241,6 +1266,9 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
   const [saveConfirmationMessage, setSaveConfirmationMessage] = useState('');
   const [isProcessingAutoTopUp, setIsProcessingAutoTopUp] = useState(false);
+  const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [checkInSuccess, setCheckInSuccess] = useState(false);
+  const [clickedDay, setClickedDay] = useState(null);
 
   useEffect(() => {
     const userId = getCurrentUser();
@@ -1553,7 +1581,39 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     }
     
     try {
-      // Call the backend API to actually top up the card
+      // If payment was made with a prepaid card, we need to create both transactions:
+      // 1. Debit transaction for the paying card (if it was a prepaid card)
+      // 2. Credit transaction for the receiving card
+      
+      const userId = getCurrentUser();
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+      
+      // Create debit transaction for the paying card (if it was a prepaid card)
+      if (paymentData.method === 'NETS_PREPAID' && paymentData.cardId) {
+        console.log('Creating debit transaction for paying card:', paymentData.cardId);
+        
+        const debitResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            card_id: paymentData.cardId,
+            name: `Top-up Payment for Card ending in ${topUpPaymentData.card.number.slice(-4)}`,
+            amount: -topUpPaymentData.amount, // Negative amount for debit
+            type: 'expense'
+          })
+        });
+        
+        if (!debitResponse.ok) {
+          console.error('Failed to create debit transaction:', await debitResponse.text());
+        } else {
+          console.log('Debit transaction created successfully');
+        }
+      }
+      
+      // Call the backend API to actually top up the destination card
       console.log('Calling top-up API:', { 
         card_id: topUpPaymentData.card.id, 
         amount: topUpPaymentData.amount 
@@ -1578,13 +1638,23 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
       const result = await response.json();
       console.log('Top-up API successful:', result);
       
-      // Update the card balance in the UI immediately
+      // Update both card balances in the UI immediately
       setCards(prevCards => {
         console.log('Previous cards:', prevCards);
         const updatedCards = prevCards.map(card => {
+          // Update the receiving card (being topped up)
           if (card.id === topUpPaymentData.card.id) {
             const newBalance = Number(card.balance || 0) + Number(topUpPaymentData.amount);
-            console.log(`Updating card ${card.id} balance from ${card.balance} to ${newBalance}`);
+            console.log(`Updating receiving card ${card.id} balance from ${card.balance} to ${newBalance}`);
+            return { 
+              ...card, 
+              balance: newBalance 
+            };
+          }
+          // Update the paying card (if it was a prepaid card)
+          if (paymentData.method === 'NETS_PREPAID' && paymentData.cardId && card.id === paymentData.cardId) {
+            const newBalance = Number(card.balance || 0) - Number(topUpPaymentData.amount);
+            console.log(`Updating paying card ${card.id} balance from ${card.balance} to ${newBalance}`);
             return { 
               ...card, 
               balance: newBalance 
@@ -1596,8 +1666,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
         return updatedCards;
       });
       
-      // Refresh transactions to show the new top-up transaction
-      const userId = getCurrentUser();
+      // Refresh transactions to show both the debit and credit transactions
       if (userId) {
         console.log('Refreshing transactions for user:', userId);
         refreshTransactions(userId);
@@ -1636,6 +1705,14 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     setPaymentData({ recipient, card, amount });
     setShowSendMoney(false);
     setShowPaymentGame(true);
+  };
+
+  // Split Bill handler for food transactions
+  const handleSplitBill = (transaction) => {
+    setSelectedTransactionForSplit(transaction);
+    setSelectedFriendsForSplit([]);
+    setSplitBillResult(null);
+    setShowTransactionSplitModal(true);
   };
 
   // Delete card handler
@@ -1861,9 +1938,18 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
 
   const handleCheckIn = async () => {
     const userId = getCurrentUser();
-    if (!userId) return;
+    console.log('handleCheckIn called with userId:', userId);
+    console.log('localStorage user_id:', localStorage.getItem('user_id'));
+    console.log('isSignedIn state:', isSignedIn);
+    console.log('Current frontend checkInData:', checkInData);
+    if (!userId) {
+      console.log('No userId, returning');
+      alert('❌ You need to be signed in to check in!');
+      return;
+    }
 
     try {
+      console.log('Making API call to check-in...');
       const response = await fetch('http://localhost:3002/api/check-in', {
         method: 'POST',
         headers: {
@@ -1872,16 +1958,28 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
         body: JSON.stringify({ userId })
       });
 
+      console.log('API response received:', response);
       const data = await response.json();
+      console.log('API data:', data);
+      
       if (data.success) {
-        setUserCoins(prev => prev + data.coinsEarned);
+        console.log('Check-in successful, updating state...');
+        setUserCoins(prev => {
+          console.log('Previous coins:', prev, 'Adding:', data.coinsEarned);
+          return prev + data.coinsEarned;
+        });
         setCheckInData(data.checkInData);
-        alert(`✅ Check-in successful! You earned ${data.coinsEarned} coin${data.coinsEarned > 1 ? 's' : ''}!`);
+        console.log('New check-in data:', data.checkInData);
+        // Show simple success message instead of modal to avoid loop
+        alert(`✅ Check-in successful! You earned 1 coin!`);
       } else {
-        // Handle "already checked in" case without showing error alert
+        console.log('Check-in failed:', data);
+        console.log('Full response data:', JSON.stringify(data, null, 2));
+        // Handle "already checked in" case
         if (data.message === 'Already checked in today') {
+          console.log('Backend says already checked in today, updating frontend state...');
           setCheckInData(data.checkInData);
-          // Don't show alert for this case
+          setShowCheckInModal(true);
         } else {
           alert(`❌ ${data.error || 'Failed to check in'}`);
         }
@@ -1919,6 +2017,24 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     } catch (error) {
       console.error('Error clearing check-in:', error);
       alert('❌ Failed to clear check-in record. Please try again.');
+    }
+  };
+
+  // Refresh check-in data from backend
+  const refreshCheckInData = async () => {
+    const userId = getCurrentUser();
+    if (!userId) return;
+    
+    try {
+      console.log('Refreshing check-in data from backend...');
+      const response = await fetch(`http://localhost:3002/api/check-in/${userId}`);
+      const data = await response.json();
+      console.log('Refreshed check-in data:', data);
+      if (data.success) {
+        setCheckInData(data.data);
+      }
+    } catch (error) {
+      console.error('Error refreshing check-in data:', error);
     }
   };
 
@@ -2169,7 +2285,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
               <img src="/src/assets/autotopup.png" alt="Auto Top Up" className={styles.quickActionIcon} />
               <span>Auto Top Up</span>
           </button>
-                            <button onClick={openSmartShortcutTopUp} className={styles.quickActionBtn}>
+            <button onClick={openSmartShortcutTopUp} className={styles.quickActionBtn}>
               <img src="/src/assets/topup.png" alt="Top-up" className={styles.quickActionIcon} />
               <span>Top-up</span>
             </button>
@@ -2177,6 +2293,17 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
               <img src="/src/assets/split.png" alt="Split Bill" className={styles.quickActionIcon} />
               <span>Split Bill</span>
           </button>
+            <button onClick={() => {
+              console.log('NFC Payment button clicked - opening modal');
+              setShowNFCModal(true);
+            }} className={styles.quickActionBtn}>
+              <img src="/src/assets/nfc.png" alt="NFC Payment" className={styles.quickActionIcon} />
+              <span>NFC Payment</span>
+            </button>
+            <button onClick={() => setShowStatsModal(true)} className={styles.quickActionBtn}>
+              <img src="/src/assets/stats.png" alt="Stats" className={styles.quickActionIcon} />
+              <span>Stats</span>
+            </button>
           </div>
         </div>
 
@@ -2259,7 +2386,31 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
               return (
                 <div 
                   key={day} 
-                  className={`${styles.checkInCard} ${isToday ? styles.todayCard : ''} ${isCompleted ? styles.completedCard : ''} ${isSpecial ? styles.specialCard : ''}`}
+                  className={`${styles.checkInCard} ${isToday ? styles.todayCard : ''} ${isCompleted ? styles.completedCard : ''} ${isSpecial && isCompleted ? styles.specialCard : ''}`}
+                  onClick={() => {
+                    if (isCompleted) {
+                      // Show completed day info in modal
+                      setClickedDay(day);
+                      setShowCheckInModal(true);
+                    } else if (isToday && !isCompleted) {
+                      // Only allow check-in on Day 1, or if previous day is completed
+                      if (day === 1 || checkInData.currentStreak >= day - 1) {
+                        console.log(`Checking in for Day ${day}, current streak: ${checkInData.currentStreak}`);
+                        handleCheckIn();
+                      } else {
+                        console.log(`Cannot check in Day ${day}, need to complete Day ${day - 1} first`);
+                        setClickedDay(day);
+                        setShowCheckInModal(true);
+                      }
+                    } else {
+                      // Show info for future days in modal
+                      setClickedDay(day);
+                      setShowCheckInModal(true);
+                    }
+                  }}
+                  style={{
+                    cursor: 'pointer'
+                  }}
                 >
                   <div className={styles.coinReward}>+{coinsReward}</div>
                   <div className={styles.coinIcon}>
@@ -2274,15 +2425,435 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
           </div>
           <button 
             className={styles.checkInButton}
-            onClick={handleCheckIn}
-            disabled={checkInData.lastCheckIn && new Date(checkInData.lastCheckIn).toDateString() === new Date().toDateString()}
+            onClick={() => {
+              console.log('Check-in button clicked!'); // Debug log
+              console.log('checkInData.lastCheckIn:', checkInData.lastCheckIn);
+              console.log('Today:', new Date().toDateString());
+              if (checkInData.lastCheckIn) {
+                console.log('Last check-in date:', new Date(checkInData.lastCheckIn).toDateString());
+              }
+              
+              // Always try to check in for now (for debugging)
+              console.log('Performing check-in...');
+              handleCheckIn();
+            }}
+            style={{
+              position: 'relative',
+              zIndex: 10
+            }}
           >
             {checkInData.lastCheckIn && new Date(checkInData.lastCheckIn).toDateString() === new Date().toDateString() 
               ? 'Already checked in today!' 
               : 'Check in today to get 1 coin'
             }
           </button>
+          
+
         </div>
+
+        {/* Check-in Modal */}
+        {console.log('Rendering check-in modal, open:', showCheckInModal)}
+        <Modal open={showCheckInModal} onClose={() => {
+          console.log('Closing check-in modal');
+          setShowCheckInModal(false);
+          setCheckInSuccess(false);
+          setClickedDay(null);
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            padding: '1rem'
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingBottom: '1rem',
+              marginBottom: '1.5rem',
+              borderBottom: '2px solid #e0e0f0'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem'
+              }}>
+                <span style={{fontSize: '2rem'}}>🎯</span>
+                <div style={{
+                  fontWeight: 700,
+                  fontSize: '1.3rem',
+                  color: '#1f2937'
+                }}>Daily Check-in Status</div>
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+              {checkInSuccess ? (
+                // Check-in successful
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem 1rem'
+                }}>
+                  <div style={{
+                    fontSize: '4rem',
+                    marginBottom: '1rem'
+                  }}>🎉</div>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 600,
+                    color: '#059669',
+                    marginBottom: '0.5rem'
+                  }}>Check-in Successful!</div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#6b7280',
+                    marginBottom: '1.5rem'
+                  }}>You earned 1 coin for today's check-in!</div>
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '2px solid #bbf7d0',
+                    borderRadius: 12,
+                    padding: '1rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669',
+                      fontWeight: 600
+                    }}>Current Streak: {checkInData.currentStreak} days</div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669'
+                    }}>Total Check-ins: {checkInData.totalCheckIns}</div>
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#6b7280'
+                  }}>Come back tomorrow to continue your streak!</div>
+                </div>
+              ) : clickedDay && clickedDay > 1 && checkInData.currentStreak < clickedDay - 1 ? (
+                // Cannot check in this day yet - show requirement
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem 1rem'
+                }}>
+                  <div style={{
+                    fontSize: '4rem',
+                    marginBottom: '1rem'
+                  }}>🔒</div>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 600,
+                    color: '#dc2626',
+                    marginBottom: '0.5rem'
+                  }}>Day {clickedDay} Locked!</div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#6b7280',
+                    marginBottom: '1.5rem'
+                  }}>You need to complete Day {clickedDay - 1} first to unlock Day {clickedDay}.</div>
+                  <div style={{
+                    background: '#fef2f2',
+                    border: '2px solid #fecaca',
+                    borderRadius: 12,
+                    padding: '1rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#dc2626',
+                      fontWeight: 600
+                    }}>Current Streak: {checkInData.currentStreak} days</div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#dc2626'
+                    }}>Required: {clickedDay - 1} days</div>
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#6b7280'
+                  }}>Complete your daily check-ins in order to unlock higher rewards!</div>
+                </div>
+              ) : checkInData.lastCheckIn && new Date(checkInData.lastCheckIn).toDateString() === new Date().toDateString() ? (
+                // Already checked in today - this should come BEFORE completed days check
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem 1rem'
+                }}>
+                  <div style={{
+                    fontSize: '4rem',
+                    marginBottom: '1rem'
+                  }}>✅</div>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 600,
+                    color: '#059669',
+                    marginBottom: '0.5rem'
+                  }}>Already Checked In Today!</div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#6b7280',
+                    marginBottom: '1.5rem'
+                  }}>You've already earned your daily coin reward.</div>
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '2px solid #bbf7d0',
+                    borderRadius: 12,
+                    padding: '1rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669',
+                      fontWeight: 600
+                    }}>Current Streak: {checkInData.currentStreak} days</div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669'
+                    }}>Total Check-ins: {checkInData.totalCheckIns}</div>
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#6b7280'
+                  }}>Come back tomorrow for your next reward!</div>
+                </div>
+              ) : clickedDay && checkInData.currentStreak >= clickedDay ? (
+                // Day completed - show completion info
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem 1rem'
+                }}>
+                  <div style={{
+                    fontSize: '4rem',
+                    marginBottom: '1rem'
+                  }}>✅</div>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 600,
+                    color: '#059669',
+                    marginBottom: '0.5rem'
+                  }}>Day {clickedDay} Completed!</div>
+                  <div style={{
+                    fontSize: '1rem',
+                    color: '#6b7280',
+                    marginBottom: '1.5rem'
+                  }}>Great job! You've completed Day {clickedDay} of your streak.</div>
+                  <div style={{
+                    background: '#f0fdf4',
+                    border: '2px solid #bbf7d0',
+                    borderRadius: 12,
+                    padding: '1rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669',
+                      fontWeight: 600
+                    }}>Current Streak: {checkInData.currentStreak} days</div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#059669'
+                    }}>Total Check-ins: {checkInData.totalCheckIns}</div>
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#6b7280'
+                  }}>Keep up the good work!</div>
+                </div>
+              ) : (
+                // Check if can check in today based on streak
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem 1rem'
+                }}>
+                  {checkInData.currentStreak === 0 ? (
+                    // First time checking in
+                    <>
+                      <div style={{
+                        fontSize: '4rem',
+                        marginBottom: '1rem'
+                      }}>🎯</div>
+                      <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 600,
+                        color: '#1f2937',
+                        marginBottom: '0.5rem'
+                      }}>Start Your Daily Check-in Streak!</div>
+                      <div style={{
+                        fontSize: '1rem',
+                        color: '#6b7280',
+                        marginBottom: '1.5rem'
+                      }}>Click the button below to earn your first daily coin reward.</div>
+                      <div style={{
+                        background: '#f0f9ff',
+                        border: '2px solid #7dd3fc',
+                        borderRadius: 12,
+                        padding: '1rem',
+                        marginBottom: '1.5rem'
+                      }}>
+                        <div style={{
+                          fontSize: '0.9rem',
+                          color: '#0369a1',
+                          fontWeight: 600
+                        }}>Current Streak: 0 days</div>
+                        <div style={{
+                          fontSize: '0.9rem',
+                          color: '#0369a1'
+                        }}>Total Check-ins: {checkInData.totalCheckIns}</div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          handleCheckIn();
+                          setShowCheckInModal(false);
+                        }}
+                        style={{
+                          background: 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)',
+                          color: '#fff',
+                          border: '2px solid #003da6',
+                          borderRadius: 12,
+                          padding: '1rem 2rem',
+                          fontWeight: 700,
+                          fontSize: '1rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          minWidth: '150px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #002d7a 0%, #003da6 100%)';
+                          e.target.style.borderColor = '#002d7a';
+                          e.target.style.transform = 'translateY(-2px)';
+                          e.target.style.boxShadow = '0 8px 25px rgba(0, 61, 166, 0.3)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)';
+                          e.target.style.borderColor = '#003da6';
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      >
+                        Start Check-in
+                      </button>
+                    </>
+                  ) : (
+                    // Continue streak
+                    <>
+                      <div style={{
+                        fontSize: '4rem',
+                        marginBottom: '1rem'
+                      }}>🎯</div>
+                      <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 600,
+                        color: '#1f2937',
+                        marginBottom: '0.5rem'
+                      }}>Continue Your Streak!</div>
+                      <div style={{
+                        fontSize: '1rem',
+                        color: '#6b7280',
+                        marginBottom: '1.5rem'
+                      }}>Click the button below to continue your daily check-in streak.</div>
+                      <div style={{
+                        background: '#f0f9ff',
+                        border: '2px solid #7dd3fc',
+                        borderRadius: 12,
+                        padding: '1rem',
+                        marginBottom: '1.5rem'
+                      }}>
+                        <div style={{
+                          fontSize: '0.9rem',
+                          color: '#0369a1',
+                          fontWeight: 600
+                        }}>Current Streak: {checkInData.currentStreak} days</div>
+                        <div style={{
+                          fontSize: '0.9rem',
+                          color: '#0369a1'
+                        }}>Total Check-ins: {checkInData.totalCheckIns}</div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          handleCheckIn();
+                          setShowCheckInModal(false);
+                        }}
+                        style={{
+                          background: 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)',
+                          color: '#fff',
+                          border: '2px solid #003da6',
+                          borderRadius: 12,
+                          padding: '1rem 2rem',
+                          fontWeight: 700,
+                          fontSize: '1rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          minWidth: '150px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #002d7a 0%, #003da6 100%)';
+                          e.target.style.borderColor = '#002d7a';
+                          e.target.style.transform = 'translateY(-2px)';
+                          e.target.style.boxShadow = '0 8px 25px rgba(0, 61, 166, 0.3)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)';
+                          e.target.style.borderColor = '#003da6';
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      >
+                        Check In Now
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            {/* Footer */}
+            <div style={{
+              paddingTop: '1rem',
+              borderTop: '2px solid #e0e0f0',
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
+              <button 
+                onClick={() => setShowCheckInModal(false)}
+                style={{
+                  background: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
+                  color: '#fff',
+                  border: '2px solid #6b7280',
+                  borderRadius: 12,
+                  padding: '0.8rem 2rem',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  minWidth: '120px'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #4b5563 0%, #6b7280 100%)';
+                  e.target.style.borderColor = '#4b5563';
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(107, 114, 128, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)';
+                  e.target.style.borderColor = '#6b7280';
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </Modal>
 
         {/* Your Cards */}
         <section className={styles.cardsSection}>
@@ -2345,22 +2916,72 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
             )}
             {sortedTransactions.slice(0, 5).map(txn => {
               const card = cards.find(c => c.id === txn.card_id);
-              const digits = card && card.number ? card.number.replace(/\D/g, '') : '';
-              const masked = digits.length >= 4
-                ? '**** **** **** ' + digits.slice(-4)
-                : card && card.number ? card.number : 'Unknown';
+              let paymentMethod = 'Unknown';
+              
+              if (txn.card_id) {
+                // Card-based transaction
+                const digits = card && card.number ? card.number.replace(/\D/g, '') : '';
+                paymentMethod = digits.length >= 4
+                  ? '**** **** **** ' + digits.slice(-4)
+                  : card && card.number ? card.number : 'Unknown';
+              } else {
+                // External payment method (eNETS, NETS QR)
+                if (txn.name.includes('(ENETS)')) {
+                  paymentMethod = 'eNETS Payment';
+                } else if (txn.name.includes('(NETS QR)')) {
+                  paymentMethod = 'NETS QR Payment';
+                } else {
+                  paymentMethod = 'External Payment';
+                }
+              }
+              
               return (
-                <li className={styles.transaction} key={txn.id + '-' + txn.card_id}>
+                <li className={styles.transaction} key={txn.id + '-' + (txn.card_id || 'external')}>
                   <span className={styles.txnIcon + ' ' + (txn.type === 'income' ? styles.income : styles.expense)}>
                     {txn.type === 'income' ? '⬆️' : '⬇️'}
                   </span>
                   <div className={styles.txnDetails}>
                     <div className={styles.txnName}>{txn.name}</div>
                     <div className={styles.txnTime}>{new Date(txn.time).toLocaleString()}</div>
-                    <div className={styles.cardNumber} style={{fontSize:'0.85rem',color:'#888'}}>Card: {masked}</div>
+                    <div className={styles.cardNumber} style={{fontSize:'0.85rem',color:'#888'}}>
+                      {txn.card_id ? `Card: ${paymentMethod}` : paymentMethod}
+                    </div>
                   </div>
-                  <div className={styles.txnAmount + ' ' + (txn.type === 'income' ? styles.income : styles.expense)}>
-                    {txn.amount > 0 ? '+' : ''}${Math.abs(txn.amount).toFixed(2)}
+                  <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <div className={styles.txnAmount + ' ' + (txn.type === 'income' ? styles.income : styles.expense)}>
+                      {txn.type === 'income' ? '+' : ''}${Math.abs(txn.amount).toFixed(2)}
+                    </div>
+                    {/* Split button for food transactions */}
+                    {txn.type === 'expense' && (
+                      txn.name.includes('Food') || 
+                      txn.name.includes('cafe') || 
+                      txn.name.includes('restaurant') || 
+                      txn.name.includes('Burger') || 
+                      txn.name.includes('Coffee') ||
+                      txn.name.includes('Kitchen') ||
+                      txn.name.includes('Chefs') ||
+                      txn.name.includes('(ENETS)') ||
+                      txn.name.includes('(NETS QR)') ||
+                      txn.name.includes('(Prepaid Card)')
+                    ) && (
+                      <button 
+                        onClick={() => handleSplitBill(txn)}
+                        style={{
+                          background: '#003da6',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '4px 8px',
+                          fontSize: '0.7rem',
+                          cursor: 'pointer',
+                          fontWeight: '600',
+                          minWidth: '40px'
+                        }}
+                        title="Split this bill with friends"
+                      >
+                        Split
+                      </button>
+                    )}
                   </div>
                 </li>
               );
@@ -2386,91 +3007,177 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
 
       {/* Card Selection Modal for Smart Shortcut Top Up */}
       <Modal open={showCardSelectionModal} onClose={closeCardSelectionModal}>
-        <div style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem',minWidth:320}}>
-          <div style={{fontWeight:600,fontSize:'1.1rem'}}>Select Card to Top Up</div>
-          <div style={{display:'flex',flexDirection:'column',gap:'0.8rem'}}>
-            {cards.map(card => {
-              const masked = card.number.replace(/\d(?=\d{4})/g, '*');
-              return (
-                <div
-                  key={card.id}
-                  style={{
-                    display:'flex',
-                    justifyContent:'space-between',
-                    alignItems:'center',
-                    padding:'0.8rem 1rem',
-                    border:'1.5px solid #e0e0f0',
-                    borderRadius:8,
-                    background:'#fff',
-                    fontSize:'0.9rem',
-                    transition:'all 0.2s ease'
-                  }}
-                >
-                  <div style={{display:'flex',flexDirection:'column',gap:'0.3rem'}}>
-                    <span style={{fontWeight:500}}>Card ending in {card.number.slice(-4)}</span>
-                    <span style={{color:'#666',fontSize:'0.8rem'}}>Balance: ${Number(card.balance || 0).toFixed(2)}</span>
-                  </div>
-                  <div style={{display:'flex',flexDirection:'column',gap:'0.3rem',alignItems:'flex-end'}}>
-                    <input
-                      type="number"
-                      min="1"
-                      step="0.01"
-                      placeholder="Amount"
-                      value={topUpCardId === card.id ? topUpAmount : ''}
-                      onChange={(e) => {
-                        if (e.target.value === '' || parseFloat(e.target.value) > 0) {
-                          setTopUpCardId(card.id);
-                          setTopUpAmount(e.target.value);
-                        }
-                      }}
-                      style={{
-                        width:'80px',
-                        padding:'0.4rem 0.6rem',
-                        borderRadius:6,
-                        border:'1.5px solid #e0e0f0',
-                        fontSize:'0.8rem',
-                        textAlign:'right'
-                      }}
-                    />
-                    <button
-                      onClick={() => {
-                        if (topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0) {
-                          handleTopUpConfirmation();
-                        } else {
-                          alert('Please enter a valid amount first');
-                        }
-                      }}
-                      style={{
-                        background: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? '#003da6' : '#f8f9fa',
-                        color: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? '#fff' : '#666',
-                        border:'1.5px solid #e0e0f0',
-                        borderRadius:6,
-                        padding:'0.3rem 0.8rem',
-                        fontWeight:600,
-                        fontSize:'0.8rem',
-                        cursor: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? 'pointer' : 'not-allowed',
-                        transition:'all 0.2s ease'
-                      }}
-                    >
-                      Top Up
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+        {/* Header */}
+        <div style={{
+          display:'flex',
+          justifyContent:'space-between',
+          alignItems:'center',
+          paddingBottom:'1rem',
+          marginBottom:'1.5rem',
+          borderBottom:'2px solid #e0e0f0'
+        }}>
+          <div style={{
+            display:'flex',
+            alignItems:'center',
+            gap:'1rem'
+          }}>
+            <span style={{fontSize:'2rem'}}>💳</span>
+            <div style={{
+              fontWeight:700,
+              fontSize:'1.3rem',
+              color:'#1f2937'
+            }}>Select Card to Top Up</div>
           </div>
+        </div>
+        
+        <div style={{display:'flex',flexDirection:'column',gap:'1rem',marginBottom:'1.5rem'}}>
+          {cards.map(card => {
+            const masked = card.number.replace(/\d(?=\d{4})/g, '*');
+            return (
+              <div
+                key={card.id}
+                style={{
+                  display:'flex',
+                  justifyContent:'space-between',
+                  alignItems:'center',
+                  padding:'1.2rem 1.5rem',
+                  border:'2px solid #e5e7eb',
+                  borderRadius:16,
+                  background:'linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%)',
+                  fontSize:'0.95rem',
+                  transition:'all 0.3s ease',
+                  position:'relative',
+                  overflow:'hidden'
+                }}
+              >
+                {/* Blue top border */}
+                <div style={{
+                  position:'absolute',
+                  top:0,
+                  left:0,
+                  right:0,
+                  height:'3px',
+                  background:'linear-gradient(90deg, #003da6 0%, #0052cc 50%, #0066ff 100%)'
+                }} />
+                
+                <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                  <span style={{
+                    fontWeight:600,
+                    fontSize:'1rem',
+                    color:'#1f2937',
+                    fontFamily:'Courier New, monospace',
+                    letterSpacing:'1px'
+                  }}>Card ending in {card.number.slice(-4)}</span>
+                  <span style={{
+                    color:'#374151',
+                    fontSize:'0.9rem',
+                    fontWeight:500
+                  }}>Balance: <span style={{color:'#003da6',fontWeight:700}}>${Number(card.balance || 0).toFixed(2)}</span></span>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:'0.8rem',alignItems:'flex-end'}}>
+                  <input
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    placeholder="Amount"
+                    value={topUpCardId === card.id ? topUpAmount : ''}
+                    onChange={(e) => {
+                      if (e.target.value === '' || parseFloat(e.target.value) > 0) {
+                        setTopUpCardId(card.id);
+                        setTopUpAmount(e.target.value);
+                      }
+                    }}
+                    style={{
+                      width:'80px',
+                      padding:'0.6rem 0.6rem',
+                      borderRadius:12,
+                      border:'2px solid #e5e7eb',
+                      fontSize:'0.85rem',
+                      textAlign:'right',
+                      fontWeight:600,
+                      color:'#1f2937',
+                      background:'white',
+                      transition:'all 0.3s ease',
+                      outline:'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#003da6'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <button
+                    onClick={() => {
+                      if (topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0) {
+                        handleTopUpConfirmation();
+                        } else {
+                        alert('Please enter a valid amount first');
+                      }
+                    }}
+                    style={{
+                      background: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 
+                        ? 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)' 
+                        : '#f8f9fa',
+                      color: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? '#fff' : '#666',
+                      border:'2px solid',
+                      borderColor: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? '#003da6' : '#e0e0f0',
+                      borderRadius:12,
+                      padding:'0.6rem 0.8rem',
+                      fontWeight:700,
+                      fontSize:'0.8rem',
+                      cursor: topUpCardId === card.id && topUpAmount && parseFloat(topUpAmount) > 0 ? 'pointer' : 'not-allowed',
+                      transition:'all 0.3s ease',
+                      textTransform:'uppercase',
+                      letterSpacing:'0.3px',
+                      minWidth:'90px',
+                      whiteSpace:'nowrap',
+                      display:'flex',
+                      alignItems:'center',
+                      justifyContent:'center',
+                      gap:'4px'
+                    }}
+                  >
+                    💰 Top Up
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Footer with Cancel Button */}
+        <div style={{
+          paddingTop:'1rem',
+          borderTop:'2px solid #e0e0f0',
+          display:'flex',
+          justifyContent:'center'
+        }}>
           <button 
             onClick={closeCardSelectionModal}
             style={{
-              background:'#f8f9fa',
-              color:'#666',
-              border:'1.5px solid #e0e0f0',
-              borderRadius:8,
-              padding:'0.7rem 1.5rem',
-              fontWeight:600,
+              background:'linear-gradient(135deg, #003da6 0%, #0052cc 100%)',
+              color:'#fff',
+              border:'2px solid #003da6',
+              borderRadius:12,
+              padding:'0.8rem 2rem',
+              fontWeight:700,
               fontSize:'1rem',
               cursor:'pointer',
-              marginTop:'0.5rem'
+              transition:'all 0.3s ease',
+              textTransform:'uppercase',
+              letterSpacing:'0.5px',
+              minWidth:'120px',
+              position:'relative',
+              overflow:'hidden'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'linear-gradient(135deg, #002d7a 0%, #003da6 100%)';
+              e.target.style.borderColor = '#002d7a';
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 8px 25px rgba(0, 61, 166, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'linear-gradient(135deg, #003da6 0%, #0052cc 100%)';
+              e.target.style.borderColor = '#003da6';
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = 'none';
             }}
           >
             Cancel
@@ -2540,6 +3247,50 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
             >
               Confirm & Pay
             </button>
+            
+            {/* Result Message */}
+            {splitBillResult && (
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '12px',
+                marginTop: '16px',
+                fontSize: '14px',
+                fontWeight: '500',
+                textAlign: 'center',
+                background: splitBillResult.success 
+                  ? 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'
+                  : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
+                color: splitBillResult.success ? '#065f46' : '#991b1b',
+                border: `2px solid ${splitBillResult.success ? '#10b981' : '#ef4444'}`,
+                position: 'relative'
+              }}>
+                {splitBillResult.success ? '✅ ' : '❌ '}
+                {splitBillResult.msg}
+                {splitBillResult.success && (
+                  <button
+                    onClick={() => setShowTransactionSplitModal(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '8px',
+                      right: '8px',
+                      background: 'rgba(16, 185, 129, 0.2)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '24px',
+                      height: '24px',
+                      color: '#065f46',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Modal>
@@ -2594,6 +3345,433 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
         onClose={() => setShowBalanceDetailsModal(false)} 
         cards={cards}
       />
+      
+      {/* Transaction Split Modal - For splitting existing food transactions */}
+      <Modal key="transaction-split-modal" open={showTransactionSplitModal} onClose={() => {
+        setShowTransactionSplitModal(false);
+        setSelectedFriendsForSplit([]);
+        setSplitBillResult(null);
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '24px',
+          minWidth: '400px',
+          maxWidth: '500px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+          position: 'relative',
+          zIndex: 1001
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '20px',
+            paddingBottom: '16px',
+            borderBottom: '2px solid #e0e0f0'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{
+                background: '#003da6',
+                color: 'white',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px'
+              }}>
+                💰
+              </div>
+              <div style={{
+                fontWeight: '700',
+                fontSize: '1.4rem',
+                color: '#1f2937'
+              }}>
+                Split Transaction Bill
+              </div>
+            </div>
+            <button
+              onClick={() => setShowTransactionSplitModal(false)}
+              style={{
+                background: '#f3f4f6',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '16px',
+                color: '#6b7280'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Transaction Details */}
+          {selectedTransactionForSplit && (
+            <div style={{
+              background: '#f8f9ff',
+              borderRadius: '12px',
+              padding: '16px',
+              marginBottom: '20px',
+              border: '1px solid #e0e0f0'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '8px'
+              }}>
+                <span style={{ fontWeight: '600', color: '#374151' }}>Transaction:</span>
+                <span style={{ fontWeight: '700', color: '#1f2937' }}>{selectedTransactionForSplit.name}</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '8px'
+              }}>
+                <span style={{ fontWeight: '600', color: '#374151' }}>Total Amount:</span>
+                <span style={{ fontWeight: '700', color: '#dc2626', fontSize: '1.2rem' }}>
+                  ${Math.abs(selectedTransactionForSplit.amount).toFixed(2)}
+                </span>
+              </div>
+              <div style={{
+                fontSize: '0.9rem',
+                color: '#6b7280',
+                fontStyle: 'italic'
+              }}>
+                💡 This transaction has already been paid. Select friends to send payment requests for their share.
+              </div>
+            </div>
+          )}
+
+
+
+          {/* Friends Selection */}
+          <div style={{ marginBottom: '20px' }}>
+            <div style={{
+              fontWeight: '600',
+              fontSize: '1rem',
+              color: '#1f2937',
+              marginBottom: '12px'
+            }}>
+              Select Friends to Split With:
+            </div>
+            <div style={{
+              maxHeight: '200px',
+              overflowY: 'auto',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              padding: '8px'
+            }}>
+              {FRIENDS_LIST.map((friend, index) => {
+                const identifier = friend.type === 'whatsapp' ? friend.phone : friend.email;
+                const isSelected = selectedFriendsForSplit.some(f => (f.type === 'whatsapp' ? f.phone : f.email) === identifier);
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '12px',
+                      borderBottom: index < FRIENDS_LIST.length - 1 ? '1px solid #f3f4f6' : 'none',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      transition: 'background-color 0.2s',
+                      background: isSelected ? '#f0f4ff' : 'transparent',
+                      border: isSelected ? '2px solid #003da6' : 'none'
+                    }}
+                    onClick={() => {
+                      const identifier = friend.type === 'whatsapp' ? friend.phone : friend.email;
+                      setSelectedFriendsForSplit(prev => {
+                        const newSelection = prev.some(f => (f.type === 'whatsapp' ? f.phone : f.email) === identifier)
+                          ? prev.filter(f => (f.type === 'whatsapp' ? f.phone : f.email) !== identifier)
+                          : [...prev, friend];
+                        return newSelection;
+                      });
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.target.style.backgroundColor = '#f9fafb';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.target.style.backgroundColor = isSelected ? '#f0f4ff' : 'transparent';
+                      }
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      id={`friend-${index}`}
+                      checked={isSelected}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        const identifier = friend.type === 'whatsapp' ? friend.phone : friend.email;
+                        setSelectedFriendsForSplit(prev => {
+                          const newSelection = prev.some(f => (f.type === 'whatsapp' ? f.phone : f.email) === identifier)
+                            ? prev.filter(f => (f.type === 'whatsapp' ? f.phone : f.email) !== identifier)
+                            : [...prev, friend];
+                          return newSelection;
+                        });
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        marginRight: '12px',
+                        transform: 'scale(1.2)',
+                        accentColor: '#003da6'
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: '600', color: '#1f2937' }}>{friend.name}</div>
+                      <div style={{ fontSize: '0.9rem', color: '#6b7280' }}>
+                        {friend.type === 'whatsapp' ? friend.phone : friend.email}
+                      </div>
+                    </div>
+                    <span style={{
+                      background: friend.type === 'whatsapp' ? '#25D366' : '#003da6',
+                      color: 'white',
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600'
+                    }}>
+                      {friend.type === 'whatsapp' ? 'WHATSAPP' : 'EMAIL'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Split Calculation */}
+          <div style={{
+            background: '#f0f4ff',
+            borderRadius: '8px',
+            padding: '16px',
+            marginBottom: '20px',
+            border: '1px solid #dbeafe'
+          }}>
+            <div style={{
+              fontWeight: '600',
+              color: '#1e40af',
+              marginBottom: '8px'
+            }}>
+              Split Calculation:
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.9rem',
+              marginBottom: '4px'
+            }}>
+              <span>Total Amount:</span>
+              <span style={{ fontWeight: '600' }}>
+                ${selectedTransactionForSplit ? Math.abs(selectedTransactionForSplit.amount).toFixed(2) : '0.00'}
+              </span>
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.9rem',
+              marginBottom: '4px'
+            }}>
+              <span>People Splitting:</span>
+              <span style={{ fontWeight: '600' }}>
+                {selectedFriendsForSplit.length + 1}
+              </span>
+            </div>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              fontSize: '0.9rem',
+              fontWeight: '700',
+              color: '#1e40af'
+            }}>
+              <span>Amount per Person:</span>
+              <span>
+                ${(() => {
+                  const totalPeople = selectedFriendsForSplit.length + 1;
+                  const totalAmount = selectedTransactionForSplit ? Math.abs(selectedTransactionForSplit.amount) : 0;
+                  const amountPerPerson = totalPeople > 0 ? (totalAmount / totalPeople) : 0;
+                  return amountPerPerson.toFixed(2);
+                })()}
+              </span>
+            </div>
+          </div>
+
+          {/* Send Split Bill Button */}
+          <button
+            onClick={async () => {
+              if (selectedFriendsForSplit.length === 0) {
+                alert('Please select at least one friend to split the bill with.');
+                return;
+              }
+              
+              setSendingSplitBill(true);
+              setSplitBillResult(null);
+              
+              // Calculate split amount
+              const totalPeople = selectedFriendsForSplit.length + 1;
+              const totalAmount = selectedTransactionForSplit ? Math.abs(selectedTransactionForSplit.amount) : 0;
+              const splitAmount = totalAmount / totalPeople;
+              
+              try {
+                // Call the new API endpoint for existing transactions (no payment required)
+                // This will generate and send QR codes to friends without deducting money
+                const res = await fetch(`${API_BASE_URL}/api/split-bill/existing`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    payer: user?.username || 'User',
+                    payerEmail: user?.email || 'noemail@example.com',
+                    amount: totalAmount,
+                    friends: selectedFriendsForSplit,
+                    message: `Split bill for ${selectedTransactionForSplit?.name || 'transaction'}`
+                  })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                  const emailFriends = selectedFriendsForSplit.filter(f => f.type === 'email');
+                  const whatsappFriends = selectedFriendsForSplit.filter(f => f.type === 'whatsapp');
+                  let successMsg = '';
+                  if (emailFriends.length > 0) {
+                    successMsg += `Split bill QR codes sent to ${emailFriends.length} friend(s) via email! `;
+                  }
+                  if (whatsappFriends.length > 0) {
+                    successMsg += `WhatsApp messages sent to ${whatsappFriends.length} friend(s)!`;
+                  }
+                  if (emailFriends.length === 0 && whatsappFriends.length === 0) {
+                    successMsg = 'Split bill processed successfully!';
+                  }
+                  
+                  setSplitBillResult({ success: true, msg: successMsg });
+                  setSelectedFriendsForSplit([]);
+                  
+                  // Refresh cards and transactions to show the updated state
+                  const userId = getCurrentUser();
+                  if (userId) {
+                    fetch(`${API_BASE_URL}/api/cards?user_id=${userId}`)
+                      .then(res => res.json())
+                      .then(data => {
+                        const cardData = Array.isArray(data)
+                          ? data.map(card => ({ ...card, balance: Number(card.balance) }))
+                          : [];
+                        setCards(cardData);
+                      });
+                    fetch(`http://localhost:3002/api/transactions?user_id=${userId}`)
+                      .then(res => res.json())
+                      .then(data => setTransactions(data));
+                  }
+                } else {
+                  setSplitBillResult({ success: false, msg: data.error || 'Failed to create split bill.' });
+                }
+              } catch (err) {
+                setSplitBillResult({ success: false, msg: err.message });
+              } finally {
+                setSendingSplitBill(false);
+              }
+            }}
+            disabled={sendingSplitBill || selectedFriendsForSplit.length === 0}
+            style={{
+              width: '100%',
+              background: (sendingSplitBill || selectedFriendsForSplit.length === 0) ? '#9ca3af' : '#003da6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '16px',
+              fontSize: '1.1rem',
+              fontWeight: '600',
+              cursor: (sendingSplitBill || selectedFriendsForSplit.length === 0) ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              if (selectedFriendsForSplit.length > 0) {
+                e.target.style.background = '#002d7a';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (selectedFriendsForSplit.length > 0) {
+                e.target.style.background = '#003da6';
+              } else {
+                e.target.style.background = '#9ca3af';
+              }
+            }}
+          >
+            {sendingSplitBill ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  borderTop: '2px solid white',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+                Processing...
+              </span>
+            ) : (
+              '📱 GENERATE NETS QR FOR FRIENDS'
+            )}
+          </button>
+          
+          {/* Result Message */}
+          {splitBillResult && (
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: '12px',
+              marginTop: '16px',
+              fontSize: '14px',
+              fontWeight: '500',
+              textAlign: 'center',
+              background: splitBillResult.success 
+                ? 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'
+                : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
+              color: splitBillResult.success ? '#065f46' : '#991b1b',
+              border: `2px solid ${splitBillResult.success ? '#10b981' : '#ef4444'}`,
+              position: 'relative'
+            }}>
+              {splitBillResult.success ? '✅ ' : '❌ '}
+              {splitBillResult.msg}
+              {splitBillResult.success && (
+                <button
+                  onClick={() => setShowTransactionSplitModal(false)}
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    background: 'rgba(16, 185, 129, 0.2)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '24px',
+                    height: '24px',
+                    color: '#065f46',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </Modal>
       
       <TransactionsModal
         open={showTransactionsModal}
@@ -2967,6 +4145,40 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
         onClose={() => setShowSaveConfirmation(false)}
         message={saveConfirmationMessage}
         type={saveConfirmationMessage.includes('Auto top up successful') ? 'autoTopUp' : 'settings'}
+      />
+
+      {/* Stats Modal */}
+      <StatsModal
+        open={showStatsModal}
+        onClose={() => setShowStatsModal(false)}
+        transactions={transactions}
+      />
+
+      {/* NFC Modal */}
+      <NFCModal
+        open={showNFCModal}
+        onClose={() => setShowNFCModal(false)}
+        user={user}
+        cards={cards}
+        onNFCSuccess={() => {
+          // Refresh transactions and cards after successful NFC transaction
+          const userId = getCurrentUser();
+          if (userId) {
+            refreshTransactions(userId);
+            // Refresh cards from backend
+            fetch(`http://localhost:3002/api/cards?user_id=${userId}`)
+              .then(res => res.json())
+              .then(data => {
+                const cardData = Array.isArray(data)
+                  ? data.map(card => ({ ...card, balance: Number(card.balance) }))
+                  : [];
+                setCards(cardData);
+              })
+              .catch(err => {
+                console.error('Error refreshing cards:', err);
+              });
+          }
+        }}
       />
     </div>
   );

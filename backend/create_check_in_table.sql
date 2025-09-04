@@ -16,3 +16,7 @@ CREATE INDEX IF NOT EXISTS idx_check_ins_user_id ON check_ins(user_id);
 ALTER TABLE check_ins ADD CONSTRAINT unique_user_check_in UNIQUE (user_id);
 
 
+
+
+
+

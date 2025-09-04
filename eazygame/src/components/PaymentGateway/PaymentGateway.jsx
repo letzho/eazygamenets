@@ -20,7 +20,7 @@ const PAYMENT_METHODS = {
     timeout: 125
   },
   ENETS_QR: {
-    name: 'eNETS QR',
+    name: 'NETS QR',
     image: qrImage,
     description: 'QR code payment',
     timeout: 605
@@ -264,7 +264,13 @@ export default function PaymentGateway({
         
         // Call success callback after showing checkmark
         setTimeout(() => {
-          onPaymentSuccess?.(data);
+          onPaymentSuccess?.({
+            ...data,
+            method: selectedMethod,
+            amount: finalAmount,
+            items: items,
+            cardId: selectedPrepaidCard.id
+          });
           onClose();
         }, 2000);
       } else {
@@ -332,7 +338,12 @@ export default function PaymentGateway({
             
             // Call success callback after showing checkmark
             setTimeout(() => {
-              onPaymentSuccess?.(data);
+              onPaymentSuccess?.({
+                ...data,
+                method: selectedMethod,
+                amount: finalAmount,
+                items: items
+              });
               onClose();
             }, 2000);
           } else {
@@ -476,6 +487,15 @@ export default function PaymentGateway({
         }
         
         eventSource.close();
+        
+        // Call success callback
+        onPaymentSuccess?.({
+          method: selectedMethod,
+          amount: finalAmount,
+          items: items,
+          paymentId: data.paymentId || 'webhook_success'
+        });
+        
         setTimeout(() => {
           onClose();
         }, 3000);
@@ -877,6 +897,30 @@ export default function PaymentGateway({
                              });
                              
                              if (response.ok) {
+                               // Create transaction record for simulated NETS QR payment
+                               try {
+                                 const userId = getCurrentUser();
+                                 const transactionResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
+                                   method: 'POST',
+                                   headers: { 'Content-Type': 'application/json' },
+                                   body: JSON.stringify({
+                                     user_id: userId,
+                                     card_id: null, // No card involved for NETS QR
+                                     name: `Purchase: ${items.map(item => item.name).join(', ')} (NETS QR - Simulated)`,
+                                     amount: -finalAmount,
+                                     type: 'expense'
+                                   })
+                                 });
+                                 
+                                 if (!transactionResponse.ok) {
+                                   console.error('Failed to create simulated NETS QR transaction record');
+                                 } else {
+                                   console.log('Simulated NETS QR transaction record created successfully');
+                                 }
+                               } catch (error) {
+                                 console.error('Error creating simulated NETS QR transaction record:', error);
+                               }
+                               
                                setPaymentSuccess(true);
                                
                                // Use vouchers if any were applied

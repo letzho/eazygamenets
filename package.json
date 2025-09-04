@@ -1,16 +1,4 @@
 {
-  "name": "eazygame-payment-app",
-  "version": "1.0.0",
-  "description": "A comprehensive payment and gaming application with NETS integration",
-  "main": "backend/index.js",
-  "scripts": {
-    "heroku-postbuild": "cd eazygame && npm install && npm run build && cd ../backend && npm install",
-    "start": "cd backend && npm start",
-    "setup-db": "cd backend && npm run setup-db"
-  },
-  "engines": {
-    "node": ">=18 <23"
-  },
   "dependencies": {
     "jsqr": "^1.4.0",
     "nodemailer": "^7.0.4",
@@ -18,5 +6,13 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "twilio": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=18 <23"
+  },
+  "scripts": {
+    "heroku-postbuild": "npm --prefix eazygame ci --include=dev && npm --prefix eazygame run build && npm --prefix backend ci",
+    "start": "node backend/index.js",
+    "setup-db": "npm --prefix backend run setup-db"
   }
 }

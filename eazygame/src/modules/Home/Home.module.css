@@ -735,6 +735,15 @@
   justify-content: space-between;
 }
 
+.checkInCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.checkInCard:active {
+  transform: translateY(0);
+}
+
 .todayCard {
   border-color: #ff4444;
   background: linear-gradient(135deg, #fff5f5, #ffe8e8);
@@ -769,6 +778,22 @@
 .specialCard .dayLabel {
   color: white;
   font-weight: 600;
+}
+
+/* Day 7 when not completed - should look like Day 6 */
+.checkInCard:not(.completedCard):nth-child(7) {
+  background: white;
+  border-color: #e0e0e0;
+  color: #333;
+  box-shadow: none;
+}
+
+.checkInCard:not(.completedCard):nth-child(7) .coinReward {
+  color: #333;
+}
+
+.checkInCard:not(.completedCard):nth-child(7) .dayLabel {
+  color: #666;
 }
 
 .coinReward {

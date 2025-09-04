@@ -82,8 +82,8 @@ async function seedDatabase() {
         // Insert transactions for this card
         for (const transaction of user.data.transactions) {
           await pool.query(
-            'INSERT INTO transactions (card_id, name, time, amount, type) VALUES ($1, $2, $3, $4, $5)',
-            [cardId, transaction.name, new Date(), transaction.amount, transaction.type]
+            'INSERT INTO transactions (user_id, card_id, name, time, amount, type) VALUES ($1, $2, $3, $4, $5, $6)',
+            [userId, cardId, transaction.name, new Date(), transaction.amount, transaction.type]
           );
         }
       }
