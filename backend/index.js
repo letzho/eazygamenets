@@ -428,7 +428,7 @@ app.post('/api/split-bill', async (req, res) => {
     // Add transaction for full bill amount
     await pool.query(
       'INSERT INTO transactions (user_id, card_id, name, time, amount, type) VALUES ($1, $2, $3, NOW(), $4, $5)',
-      [user_id, cardId, 'Split Bill Payment', -Math.abs(amount), 'expense']
+      [user_id, cardId, 'Split Bill Payment', Math.abs(amount), 'expense']
     );
     // Calculate split amount (include payer)
     const totalPeople = friends.length + 1;
