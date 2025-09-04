@@ -132,7 +132,7 @@ function SplitBillModal(props) {
                 : [];
               setCards(cardData);
             });
-          fetch(`http://localhost:3002/api/transactions?user_id=${userId}`)
+          fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`)
             .then(res => res.json())
             .then(data => setTransactions(data));
         }
@@ -1321,7 +1321,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
       }
 
       // Load voucher history
-      const historyResponse = await fetch(`http://localhost:3002/api/vouchers/transactions/${userId}`);
+      const historyResponse = await fetch(`${API_BASE_URL}/api/vouchers/transactions/${userId}`);
       const historyData = await historyResponse.json();
       if (historyData.success) {
         setVoucherHistory(historyData.transactions);
@@ -3671,7 +3671,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
                           : [];
                         setCards(cardData);
                       });
-                    fetch(`http://localhost:3002/api/transactions?user_id=${userId}`)
+                    fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`)
                       .then(res => res.json())
                       .then(data => setTransactions(data));
                   }

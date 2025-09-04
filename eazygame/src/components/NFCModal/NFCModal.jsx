@@ -304,7 +304,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
       };
 
       // Send to backend
-      const response = await fetch('http://localhost:3002/api/nfc-transactions', {
+      const response = await fetch(`${API_BASE_URL}/api/nfc-transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(nfcTransaction)
@@ -334,7 +334,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
           };
 
           // Add transaction to main transactions table
-          const transactionResponse = await fetch('http://localhost:3002/api/transactions', {
+          const transactionResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(transactionRecord)
@@ -374,7 +374,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
 
     try {
       // Check for pending NFC transactions
-      const response = await fetch(`http://localhost:3002/api/nfc-transactions/receive/${encodeURIComponent(currentUser.email)}`);
+      const response = await fetch(`${API_BASE_URL}/api/nfc-transactions/receive/${encodeURIComponent(currentUser.email)}`);
       
       if (response.ok) {
         const pendingTransactions = await response.json();
@@ -403,7 +403,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
 
             if (topUpResponse.ok) {
               // Mark transaction as received
-              await fetch(`http://localhost:3002/api/nfc-transactions/${transaction.id}/receive`, {
+              await fetch(`${API_BASE_URL}/api/nfc-transactions/${transaction.id}/receive`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' }
               });
@@ -420,7 +420,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
               };
 
               // Add transaction to main transactions table
-              const transactionResponse = await fetch('http://localhost:3002/api/transactions', {
+              const transactionResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(transactionRecord)

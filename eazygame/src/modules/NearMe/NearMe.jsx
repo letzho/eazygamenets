@@ -34,7 +34,7 @@ export default function NearMe({ isSignedIn, user, onProfileClick, cards, setCar
   // Fetch transactions
   const fetchTransactions = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3002/api/transactions?user_id=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
@@ -260,9 +260,9 @@ export default function NearMe({ isSignedIn, user, onProfileClick, cards, setCar
       
       console.log('=== TRANSACTION CREATION DEBUG ===');
       console.log('Transaction data to send:', transactionData);
-      console.log('API endpoint:', 'http://localhost:3002/api/transactions');
+      console.log('API endpoint:', `${API_BASE_URL}/api/transactions`);
       
-      const transactionResponse = await fetch('http://localhost:3002/api/transactions', {
+      const transactionResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(transactionData)
