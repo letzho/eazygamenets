@@ -6,6 +6,8 @@ const API_BASE_URL = isProduction
   : 'http://localhost:3002';
 
 console.log('API_BASE_URL:', API_BASE_URL, 'isProduction:', isProduction);
+console.log('Current hostname:', window.location.hostname);
+console.log('Config loaded at:', new Date().toISOString());
 
 export default API_BASE_URL;
 
