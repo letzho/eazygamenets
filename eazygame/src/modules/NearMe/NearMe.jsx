@@ -49,7 +49,7 @@ export default function NearMe({ isSignedIn, user, onProfileClick, cards, setCar
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3002/api/places/nearby?lat=${latitude}&lng=${longitude}&type=${type}`
+        `${API_BASE_URL}/api/places/nearby?lat=${latitude}&lng=${longitude}&type=${type}`
       );
       
       if (!response.ok) {

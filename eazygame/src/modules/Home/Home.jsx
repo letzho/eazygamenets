@@ -1297,7 +1297,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
   const loadGameStatsAndVouchers = async (userId) => {
     try {
       // Load game stats
-      const statsResponse = await fetch(`http://localhost:3002/api/game-stats/${userId}`);
+      const statsResponse = await fetch(`${API_BASE_URL}/api/game-stats/${userId}`);
       const statsData = await statsResponse.json();
       if (statsData.success) {
         const statsMap = {};
@@ -1312,7 +1312,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
       }
 
       // Load vouchers
-      const vouchersResponse = await fetch(`http://localhost:3002/api/vouchers/${userId}`);
+      const vouchersResponse = await fetch(`${API_BASE_URL}/api/vouchers/${userId}`);
       const vouchersData = await vouchersResponse.json();
       console.log('Vouchers data loaded:', vouchersData); // Debug log
       if (vouchersData.success) {
@@ -1328,7 +1328,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
       }
 
       // Load check-in data
-      const checkInResponse = await fetch(`http://localhost:3002/api/check-in/${userId}`);
+      const checkInResponse = await fetch(`${API_BASE_URL}/api/check-in/${userId}`);
       const checkInData = await checkInResponse.json();
       if (checkInData.success) {
         setCheckInData(checkInData.data);
@@ -1728,7 +1728,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     }
     
     try {
-      const res = await fetch(`http://localhost:3002/api/cards/${cardId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/cards/${cardId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1876,7 +1876,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
         total_credits_earned: currentStats.total_credits_earned + 1
       };
 
-      await fetch('http://localhost:3002/api/game-stats/update', {
+      await fetch(`${API_BASE_URL}/api/game-stats/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1910,7 +1910,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     const coinsToDeduct = vouchersToExchange * 10;
     
     try {
-      const response = await fetch('http://localhost:3002/api/vouchers/exchange', {
+      const response = await fetch(`${API_BASE_URL}/api/vouchers/exchange`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1950,7 +1950,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
 
     try {
       console.log('Making API call to check-in...');
-      const response = await fetch('http://localhost:3002/api/check-in', {
+      const response = await fetch(`${API_BASE_URL}/api/check-in`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1995,7 +1995,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     if (!userId) return;
 
     try {
-      const response = await fetch('http://localhost:3002/api/check-in/clear', {
+      const response = await fetch(`${API_BASE_URL}/api/check-in/clear`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -2027,7 +2027,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     
     try {
       console.log('Refreshing check-in data from backend...');
-      const response = await fetch(`http://localhost:3002/api/check-in/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/check-in/${userId}`);
       const data = await response.json();
       console.log('Refreshed check-in data:', data);
       if (data.success) {
@@ -2043,7 +2043,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
     if (!userId) return;
 
     try {
-      const response = await fetch('http://localhost:3002/api/vouchers/reset', {
+      const response = await fetch(`${API_BASE_URL}/api/vouchers/reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -4166,7 +4166,7 @@ export default function Home({ isSignedIn, user, cards, setCards, onProfileClick
           if (userId) {
             refreshTransactions(userId);
             // Refresh cards from backend
-            fetch(`http://localhost:3002/api/cards?user_id=${userId}`)
+            fetch(`${API_BASE_URL}/api/cards?user_id=${userId}`)
               .then(res => res.json())
               .then(data => {
                 const cardData = Array.isArray(data)

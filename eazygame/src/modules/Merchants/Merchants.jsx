@@ -92,7 +92,7 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
   // Fetch transactions
   const fetchTransactions = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3002/api/transactions?user_id=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
@@ -134,7 +134,7 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
       }
 
       // Create transaction record
-      const transactionResponse = await fetch('http://localhost:3002/api/transactions', {
+      const transactionResponse = await fetch(`${API_BASE_URL}/api/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -239,7 +239,7 @@ export default function Merchants({ isSignedIn, user, onProfileClick, cards, set
         if (amount > 0) {
           console.log('Merchants: Sending deduct request with:', { card_id: alloc.cardId, amount });
                   // Deduct
-        const deductRes = await fetch('http://localhost:3002/api/cards/deduct', {
+        const deductRes = await fetch(`${API_BASE_URL}/api/cards/deduct`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ card_id: alloc.cardId, amount })

@@ -312,7 +312,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
 
       if (response.ok) {
         // Deduct from card
-        const deductResponse = await fetch('http://localhost:3002/api/cards/deduct', {
+        const deductResponse = await fetch(`${API_BASE_URL}/api/cards/deduct`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
@@ -392,7 +392,7 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
           // Add to user's default card (first card)
           const defaultCard = cards[0];
           if (defaultCard) {
-            const topUpResponse = await fetch('http://localhost:3002/api/cards/topup', {
+            const topUpResponse = await fetch(`${API_BASE_URL}/api/cards/topup`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ 
