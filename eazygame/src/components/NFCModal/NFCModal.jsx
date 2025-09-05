@@ -17,17 +17,27 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
   if (user && user.email) {
     currentUser = user;
   } else if (currentUserId) {
-    // Map user ID to email for demo purposes
+    // Map user ID to email - Updated mapping to match database
     const userIdToEmailMap = {
-      '1': 'lsheang@yahoo.com',   // User ID 1
-      '2': 'evanlee@gmail.com',   // User ID 2
-      '3': 'shilin@gmail.com',    // User ID 3
-      '8': 'lsheang@yahoo.com',   // Legacy user ID 8
-      '9': 'evanlee@gmail.com',   // Legacy user ID 9
-      '10': 'shilin@gmail.com'    // Legacy user ID 10
+      '1': 'lsheang@yahoo.com',   // User ID 1 - Leow Sheang
+      '2': 'evanlee@gmail.com',   // User ID 2 - Evan Lee  
+      '3': 'shilin@gmail.com',    // User ID 3 - Shilin
+      // Legacy mappings for backward compatibility
+      '8': 'lsheang@yahoo.com',   
+      '9': 'evanlee@gmail.com',   
+      '10': 'shilin@gmail.com'    
     };
+    
+    const mappedEmail = userIdToEmailMap[currentUserId.toString()];
+    console.log('User ID mapping:', {
+      currentUserId,
+      mappedEmail,
+      userIdToEmailMap,
+      userIdType: typeof currentUserId
+    });
+    
     currentUser = { 
-      email: userIdToEmailMap[currentUserId] || `user${currentUserId}@example.com`,
+      email: mappedEmail || `user${currentUserId}@example.com`,
       id: currentUserId 
     };
   } else {
@@ -52,11 +62,29 @@ const NFCModal = ({ open, onClose, user, cards, onNFCSuccess }) => {
   const streamRef = useRef(null);
   const modelsLoadedRef = useRef(false);
 
-  // User email to image mapping
+  // User email to image mapping - Updated for proper facial recognition
   const userImageMap = {
-    'lsheang@yahoo.com': 'leow.jpg',
-    'evanlee@gmail.com': 'evan.jpg',
-    'shilin@gmail.com': 'shilin.jpg'
+    'lsheang@yahoo.com': 'leow.jpg',    // Leow Sheang's photo
+    'evanlee@gmail.com': 'evan.jpg',    // Evan Lee's photo  
+    'shilin@gmail.com': 'shilin.jpg'    // Shilin's photo
+  };
+  
+  console.log('User Image Mapping:', userImageMap);
+  console.log('Current user email for recognition:', currentUser?.email);
+
+  // Function to fetch user info from backend if needed
+  const fetchUserInfo = async (userId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('Fetched user data from backend:', userData);
+        return userData;
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+    return null;
   };
 
   // Initialize demo mode (simulated facial recognition)
