@@ -5,6 +5,7 @@ import UserIcon from '../../components/UserIcon/UserIcon';
 import BalanceDetailsModal from '../../components/BalanceDetailsModal/BalanceDetailsModal';
 import TransactionsModal from '../../components/TransactionsModal/TransactionsModal';
 import VoucherModal from '../../components/VoucherModal/VoucherModal';
+import API_BASE_URL from '../../config.js';
 
 
 export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCards, onTabChange, onSignOut, onShowAuthModal, userVouchers = 0, onVoucherUse = null }) {
@@ -26,7 +27,7 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
   // Fetch transactions
   const fetchTransactions = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3002/api/transactions?user_id=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
@@ -104,7 +105,7 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
 
   const getAIResponse = async (message) => {
     try {
-      const response = await fetch('http://localhost:3002/api/ai-response', {
+      const response = await fetch(`${API_BASE_URL}/api/ai-response`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,21 +121,21 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
       }
 
       const data = await response.json();
-      return data.response || data.message || "I'm here to help! What would you like to know about money, shopping, food, or gaming?";
+      return data.response || data.message || "I'm here to help! What would you like to know about EZGAME features?";
     } catch (error) {
       console.error('AI API error:', error);
       // Enhanced fallback responses based on message content
       const lowerMessage = message.toLowerCase();
       if (lowerMessage.includes('money') || lowerMessage.includes('balance') || lowerMessage.includes('payment')) {
-        return "💰 I can help you with money-related questions! You can check your balance, make transfers, or learn about payment options. What specific money question do you have?";
+        return "💰 I can help you with EZGAME's payment features! We offer NFC payments, bill splitting, and instant merchant purchases. What payment question do you have?";
       } else if (lowerMessage.includes('shopping') || lowerMessage.includes('buy') || lowerMessage.includes('purchase')) {
-        return "🛒 For shopping questions, I can help you find deals, compare prices, or guide you through the shopping process. What are you looking to buy?";
+        return "🛒 EZGAME helps you find nearby restaurants and make instant purchases! I can guide you through our shopping features. What are you looking to buy?";
       } else if (lowerMessage.includes('food') || lowerMessage.includes('restaurant') || lowerMessage.includes('eat')) {
-        return "🍕 I love food questions! I can help you find restaurants, suggest dishes, or help with food delivery. What cuisine are you craving?";
-      } else if (lowerMessage.includes('game') || lowerMessage.includes('gaming') || lowerMessage.includes('play')) {
-        return "🎮 Gaming is awesome! I can help you with game recommendations, tips, or finding gaming deals. What type of games do you enjoy?";
+        return "🍕 EZGAME can help you find nearby restaurants and great food deals! What cuisine are you craving?";
+      } else if (lowerMessage.includes('game') || lowerMessage.includes('gaming') || lowerMessage.includes('play') || lowerMessage.includes('reward')) {
+        return "🎮 EZGAME offers gaming rewards! Earn coins through games and daily check-ins. 10 coins = $0.10 voucher redeemable at checkout. What gaming question do you have?";
       } else {
-        return "Hello! 👋 I'm AI Eaze, your personal assistant for money, shopping, food, and gaming questions. How can I help you today?";
+        return "This is under training and more data will be gathered to improve the outcome.";
       }
     }
   };
