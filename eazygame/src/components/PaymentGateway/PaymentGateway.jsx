@@ -246,7 +246,7 @@ export default function PaymentGateway({
           // Update vouchers in database
           try {
             const userId = getCurrentUser();
-            await fetch(`${API_BASE_URL}/api/vouchers/use`, {
+            await fetch('http://localhost:3002/api/vouchers/use', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -320,7 +320,7 @@ export default function PaymentGateway({
               // Update vouchers in database
               try {
                 const userId = getCurrentUser();
-                await fetch(`${API_BASE_URL}/api/vouchers/use`, {
+                await fetch('http://localhost:3002/api/vouchers/use', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -470,7 +470,7 @@ export default function PaymentGateway({
           // Update vouchers in database
           try {
             const userId = getCurrentUser();
-            await fetch(`${API_BASE_URL}/api/vouchers/use`, {
+            await fetch('http://localhost:3002/api/vouchers/use', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -537,7 +537,7 @@ export default function PaymentGateway({
               // Update vouchers in database
               try {
                 const userId = getCurrentUser();
-                await fetch(`${API_BASE_URL}/api/vouchers/use`, {
+                await fetch('http://localhost:3002/api/vouchers/use', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -930,7 +930,7 @@ export default function PaymentGateway({
                                  // Update vouchers in database
                                  try {
                                    const userId = getCurrentUser();
-                                   await fetch(`${API_BASE_URL}/api/vouchers/use`, {
+                                   await fetch('http://localhost:3002/api/vouchers/use', {
                                      method: 'POST',
                                      headers: {
                                        'Content-Type': 'application/json',

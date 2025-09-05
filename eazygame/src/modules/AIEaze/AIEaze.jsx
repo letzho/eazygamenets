@@ -26,7 +26,7 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
   // Fetch transactions
   const fetchTransactions = async (userId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/transactions?user_id=${userId}`);
+      const response = await fetch(`http://localhost:3002/api/transactions?user_id=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
@@ -104,7 +104,7 @@ export default function AIEaze({ isSignedIn, user, onProfileClick, cards, setCar
 
   const getAIResponse = async (message) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/ai-response`, {
+      const response = await fetch('http://localhost:3002/api/ai-response', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

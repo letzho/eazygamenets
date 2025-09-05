@@ -6,6 +6,7 @@ import BalanceDetailsModal from '../../components/BalanceDetailsModal/BalanceDet
 import TransactionsModal from '../../components/TransactionsModal/TransactionsModal';
 import VoucherModal from '../../components/VoucherModal/VoucherModal';
 import PaymentGateway from '../../components/PaymentGateway/PaymentGateway';
+import API_BASE_URL from '../../config.js';
 
 import coffeeIcon from '../../assets/coffee.jpg';
 import burgerIcon from '../../assets/burger.jpg';
@@ -49,7 +50,7 @@ export default function NearMe({ isSignedIn, user, onProfileClick, cards, setCar
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/places/nearby?lat=${latitude}&lng=${longitude}&type=${type}`
+        `http://localhost:3002/api/places/nearby?lat=${latitude}&lng=${longitude}&type=${type}`
       );
       
       if (!response.ok) {

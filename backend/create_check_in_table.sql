@@ -20,3 +20,4 @@ ALTER TABLE check_ins ADD CONSTRAINT unique_user_check_in UNIQUE (user_id);
 
 
 
+
